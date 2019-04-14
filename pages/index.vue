@@ -9,6 +9,7 @@
         <form>
           <v-text-field v-model="output" required></v-text-field>
           <v-btn color="success" v-on:click="submit">submit</v-btn>
+          <v-progress-circular v-if="progress" indeterminate color="lime"></v-progress-circular>
         </form>
       </div>
     </v-app>
@@ -26,8 +27,12 @@ import { basename } from "path";
 })
 export default class extends Vue {
   output: string = "";
+  progress: boolean = false;
 
   public async submit() {
+    this.progress = true;
+    console.log(this.output);
+
     const instance = axios.create({
       baseURL: `${process.env.baseUrl}/${process.env.graph}`,
       timeout: 5000,
@@ -40,6 +45,8 @@ export default class extends Vue {
     } catch (error) {
       console.log(error);
     }
+    this.progress = false;
+    this.output = "";
   }
 }
 </script>
