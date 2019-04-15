@@ -1,7 +1,7 @@
 export default {
   env: {
     baseUrl: "https://pixe.la/v1/users/gmidorii/graphs",
-    graph: "dev-recout",
+    graph: process.env.RECOUT_PIXELA_GRAPH,
     token: process.env.RECOUT_PIXELA_TOKEN
   },
   head: {
