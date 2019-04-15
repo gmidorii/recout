@@ -4,13 +4,16 @@
     <v-app>
       <div class="content">
         <div class="graph">
-          <img src="https://pixe.la/v1/users/gmidorii/graphs/dev-recout">
+          <img :src="graphUrl">
         </div>
         <form>
-          <v-text-field v-model="output" required></v-text-field>
-          <v-btn color="success" v-on:click="submit">submit</v-btn>
-          <v-progress-circular v-if="progress" indeterminate color="lime"></v-progress-circular>
+          <v-textarea v-model="output" required></v-textarea>
+          <v-btn color="success" v-on:click="submit" :loading="loading">submit</v-btn>
+          <v-snackbar :value="succeed" color="success" timeout="3000" top>success</v-snackbar>
         </form>
+        <div>
+          <div>{{ record }}</div>
+        </div>
       </div>
     </v-app>
   </section>
@@ -27,11 +30,13 @@ import { basename } from "path";
 })
 export default class extends Vue {
   output: string = "";
-  progress: boolean = false;
+  graphUrl: string = `${process.env.baseUrl}/${process.env.graph}`;
+  loading: boolean = false;
+  succeed: boolean = false;
+  record: string = "";
 
   public async submit() {
-    this.progress = true;
-    console.log(this.output);
+    this.loading = true;
 
     const instance = axios.create({
       baseURL: `${process.env.baseUrl}/${process.env.graph}`,
@@ -40,13 +45,17 @@ export default class extends Vue {
         "X-USER-TOKEN": process.env.token
       }
     });
+
     try {
       const res = await instance.put("/increment");
     } catch (error) {
       console.log(error);
     }
-    this.progress = false;
+
+    this.loading = false;
+    this.record = this.output;
     this.output = "";
+    this.succeed = true;
   }
 }
 </script>
@@ -54,11 +63,6 @@ export default class extends Vue {
 <style scoped>
 .header {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.cards {
-  display: flex;
-  flex-wrap: wrap;
 }
 
 .content {
