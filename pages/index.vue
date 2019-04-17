@@ -1,18 +1,23 @@
 <template>
   <section>
-    <h1 class="header">recout</h1>
     <v-app>
       <div class="content">
-        <div class="graph">
-          <img :src="graphUrl">
-        </div>
-        <form>
-          <v-textarea v-model="output" required></v-textarea>
-          <v-btn color="success" v-on:click="submit" :loading="loading">submit</v-btn>
-          <v-snackbar :value="succeed" color="success" timeout="3000" top>success</v-snackbar>
-        </form>
+        <h1 class="header">recout</h1>
         <div>
-          <div>{{ record }}</div>
+          <div class="graph">
+            <a :href="graphDetailUrl" target="_blank">
+              <img :src="graphLineUrl">
+              <img :src="graphUrl">
+            </a>
+          </div>
+          <form class="output">
+            <v-textarea class="output-text" v-model="output" :placeholder="hint" rows="2" required></v-textarea>
+            <v-btn color="success" v-on:click="submit" :loading="loading">submit</v-btn>
+            <v-snackbar :value="succeed" color="success" timeout="3000" top>success</v-snackbar>
+          </form>
+          <div>
+            <div>{{ record }}</div>
+          </div>
         </div>
       </div>
     </v-app>
@@ -29,8 +34,14 @@ import { basename } from "path";
   components: {}
 })
 export default class extends Vue {
-  output: string = "";
   graphUrl: string = `${process.env.baseUrl}/${process.env.graph}`;
+  graphLineUrl: string = `${process.env.baseUrl}/${
+    process.env.graph
+  }?mode=line`;
+  graphDetailUrl: string = `${process.env.baseUrl}/${process.env.graph}.html`;
+  hint: string = "write today your output....";
+
+  output: string = "";
   loading: boolean = false;
   succeed: boolean = false;
   record: string = "";
@@ -60,13 +71,20 @@ export default class extends Vue {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .header {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 32px;
+  margin-left: 10px;
 }
 
 .content {
   width: 80%;
   margin: 0 auto;
+
+  .output {
+    width: 80%;
+    margin: 10% auto;
+  }
 }
 </style>
