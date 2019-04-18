@@ -1,1 +1,3 @@
 runtime: go111
+includes:
+  - secret.yml
