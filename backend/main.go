@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/go-chi/chi"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,7 +9,8 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", indexHandler)
+	r := chi.NewRouter()
+	r.Get("/", indexHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -20,11 +22,3 @@ func main() {
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), nil))
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
-	}
-
-	fmt.Fprint(w, "Hello World!!")
-}
