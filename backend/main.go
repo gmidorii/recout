@@ -1,16 +1,18 @@
 package main
 
 import (
-	"github.com/go-chi/chi"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/go-chi/chi"
 )
 
 func main() {
 	r := chi.NewRouter()
 	r.Get("/", indexHandler)
+	r.Post("/recout", createRecoutHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -21,4 +23,3 @@ func main() {
 	log.Printf("Listening on port %v", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), r))
 }
-
