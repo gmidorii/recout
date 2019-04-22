@@ -31,6 +31,15 @@ func createRecoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println(form)
+	service := NewRecoutService()
+	uid, err := service.Create(form)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	log.Println(uid)
+	fmt.Fprint(w, uid)
 	w.WriteHeader(http.StatusOK)
 }
