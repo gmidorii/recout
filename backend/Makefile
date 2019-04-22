@@ -6,4 +6,4 @@ build:
 
 .PHONY: deploy
 deploy:
-	gcloud app deploy
+	gcloud app deploy --quiet
