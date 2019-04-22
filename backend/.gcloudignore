@@ -20,6 +20,8 @@
 *.so
 *.dylib
 backend
+gin-bin
+recout-backend
 
 # Test binary, build with `go test -c`
 *.test
