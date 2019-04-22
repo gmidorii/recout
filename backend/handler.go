@@ -9,6 +9,10 @@ import (
 	"google.golang.org/appengine"
 )
 
+type EnvVar struct {
+	Env string
+}
+
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
@@ -18,11 +22,11 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Hello World!!")
 }
 
-type RecoutForm struct {
-	Message string `json:message`
+type CreateRecoutHandler struct {
+	EnvVar
 }
 
-func createRecoutHandler(w http.ResponseWriter, r *http.Request) {
+func (c CreateRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 

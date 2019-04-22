@@ -9,15 +9,20 @@ import (
 	"go.mercari.io/datastore/aedatastore"
 )
 
+type Container struct {
+	Env string
+}
+
 type RecoutService interface {
 	Create(ctx context.Context, form RecoutForm) (string, error)
 }
 
 type recoutService struct {
+	Ctn Container
 }
 
-func NewRecoutService() RecoutService {
-	return &recoutService{}
+func NewRecoutService(ctn Container) RecoutService {
+	return &recoutService{Ctn: ctn}
 }
 
 func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string, err error) {
