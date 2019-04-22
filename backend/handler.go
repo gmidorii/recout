@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"google.golang.org/appengine"
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +34,8 @@ func createRecoutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	service := NewRecoutService()
-	uid, err := service.Create(form)
+	ctx := appengine.NewContext(r)
+	uid, err := service.Create(ctx, form)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

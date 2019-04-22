@@ -10,7 +10,7 @@ import (
 )
 
 type RecoutService interface {
-	Create(form RecoutForm) (string, error)
+	Create(ctx context.Context, form RecoutForm) (string, error)
 }
 
 type recoutService struct {
@@ -20,8 +20,8 @@ func NewRecoutService() RecoutService {
 	return &recoutService{}
 }
 
-func (r *recoutService) Create(form RecoutForm) (uid string, err error) {
-	client, err := aedatastore.FromContext(context.Background())
+func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string, err error) {
+	client, err := aedatastore.FromContext(ctx)
 	if err != nil {
 		return "", errors.Wrap(err, "failed init aeclient")
 	}
@@ -38,7 +38,7 @@ func (r *recoutService) Create(form RecoutForm) (uid string, err error) {
 		Message:   form.Message,
 		CreatedAt: time.Now().Unix(),
 	}
-	_, err = client.Put(context.Background(), key, &entity)
+	_, err = client.Put(ctx, key, &entity)
 	if err != nil {
 		return "", errors.Wrap(err, "failed put datastore")
 	}
