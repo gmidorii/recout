@@ -52,6 +52,6 @@ func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string
 	return
 }
 
-func generateKey(client datastore.Client, kind, env, uid string) string {
+func generateKey(client datastore.Client, kind, env, uid string) datastore.Key {
 	return client.NameKey(fmt.Sprintf("%v_%v", env, kind), uid, nil)
 }

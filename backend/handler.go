@@ -37,7 +37,10 @@ func (c CreateRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	service := NewRecoutService()
+	ctn := Container{
+		Env: c.EnvVar.Env,
+	}
+	service := NewRecoutService(ctn)
 	ctx := appengine.NewContext(r)
 	uid, err := service.Create(ctx, form)
 	if err != nil {

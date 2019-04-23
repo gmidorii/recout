@@ -2,4 +2,4 @@ runtime: go111
 includes:
   - secret.yml
 env_variables:
-  - RO_ENV: prod
+  RO_ENV: prod
