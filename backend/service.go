@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
+	"go.mercari.io/datastore"
 	"go.mercari.io/datastore/aedatastore"
 )
 
@@ -38,7 +40,7 @@ func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string
 	}
 	uid = id.String()
 
-	key := client.NameKey("RecoutEntity", uid, nil)
+	key := generateKey(client, "RecoutEntity", r.Ctn.Env, uid)
 	entity := RecoutEntity{
 		Message:   form.Message,
 		CreatedAt: time.Now().Unix(),
@@ -48,4 +50,8 @@ func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string
 		return "", errors.Wrap(err, "failed put datastore")
 	}
 	return
+}
+
+func generateKey(client datastore.Client, kind, env, uid string) string {
+	return client.NameKey(fmt.Sprintf("%v_%v", env, kind), uid, nil)
 }
