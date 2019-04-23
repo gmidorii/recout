@@ -42,6 +42,7 @@ func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string
 
 	key := generateKey(client, "RecoutEntity", r.Ctn.Env, uid)
 	entity := RecoutEntity{
+		AccountID: "@gmidorii", //TODO: fix to user login account id
 		Message:   form.Message,
 		CreatedAt: time.Now().Unix(),
 	}
