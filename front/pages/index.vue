@@ -42,12 +42,13 @@ import { basename } from "path";
   components: {}
 })
 export default class extends Vue {
-  graphUrl: string = `${process.env.baseUrl}/${process.env.graph}`;
-  graphLineUrl: string = `${process.env.baseUrl}/${
+  graphUrl: string = `${process.env.pixelaUrl}/${process.env.graph}`;
+  graphLineUrl: string = `${process.env.pixelaUrl}/${
     process.env.graph
   }?mode=line`;
-  graphDetailUrl: string = `${process.env.baseUrl}/${process.env.graph}.html`;
+  graphDetailUrl: string = `${process.env.pixelaUrl}/${process.env.graph}.html`;
   hint: string = "write today your output....";
+  recoutUrl: string = `${process.env.recoutUrl}`;
 
   output: string = "";
   loading: boolean = false;
@@ -58,7 +59,7 @@ export default class extends Vue {
     this.loading = true;
 
     const instance = axios.create({
-      baseURL: `${process.env.baseUrl}/${process.env.graph}`,
+      baseURL: this.graphUrl,
       timeout: 5000,
       headers: {
         "X-USER-TOKEN": process.env.token
@@ -67,6 +68,9 @@ export default class extends Vue {
 
     try {
       const res = await instance.put("/increment");
+      await axios.post(`${this.recoutUrl}/recout`, {
+        message: this.output
+      });
     } catch (error) {
       console.log(error);
     }
