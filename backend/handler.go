@@ -59,5 +59,15 @@ type GetRecoutHandler struct {
 }
 
 func (g GetRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	form, err := FactoryFetchForm(r.URL.Query())
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
+	ctn := Container{
+		Env: g.EnvVar.Env,
+	}
+	service := NewRecoutService(ctn)
+	service.Fetch(appengine.NewContext(r), form)
 }

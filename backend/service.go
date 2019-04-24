@@ -17,6 +17,7 @@ type Container struct {
 
 type RecoutService interface {
 	Create(ctx context.Context, form RecoutForm) (string, error)
+	Fetch(ctx context.Context, form FetchForm) error
 }
 
 type recoutService struct {
@@ -51,6 +52,10 @@ func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string
 		return "", errors.Wrap(err, "failed put datastore")
 	}
 	return
+}
+
+func (r *recoutService) Fetch(ctx context.Context, form FetchForm) error {
+	return nil
 }
 
 func generateKey(client datastore.Client, kind, env, uid string) datastore.Key {
