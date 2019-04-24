@@ -53,3 +53,11 @@ func (c CreateRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, uid)
 	w.WriteHeader(http.StatusOK)
 }
+
+type GetRecoutHandler struct {
+	EnvVar
+}
+
+func (g GetRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
+}

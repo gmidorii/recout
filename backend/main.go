@@ -21,12 +21,15 @@ func main() {
 	r.Use(c.Handler)
 	r.Get("/", indexHandler)
 
-	ch := CreateRecoutHandler{
-		EnvVar: EnvVar{
-			Env: os.Getenv("RO_ENV"),
-		},
+	env := EnvVar{
+		Env: os.Getenv("RO_ENV"),
 	}
+
+	ch := CreateRecoutHandler{EnvVar: env}
 	r.Post("/recout", ch.ServeHTTP)
+
+	gh := GetRecoutHandler{EnvVar: env}
+	r.Get("/recout", gh.ServeHTTP)
 
 	http.Handle("/", r)
 	appengine.Main()
