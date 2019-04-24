@@ -8,26 +8,42 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
 
-    <v-app>
-      <div class="content">
-        <h1 class="header">recout</h1>
-        <div>
-          <div class="graph">
+    <v-app dark>
+      <v-navigation-drawer v-model="drawer" cliped fixed app></v-navigation-drawer>
+      <v-toolbar app fixed cliped-left>
+        <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+        <v-toolbar-title>recout</v-toolbar-title>
+      </v-toolbar>
+      <v-content>
+        <v-container class="content" fluid>
+          <v-layout column justify-center>
             <a :href="graphDetailUrl" target="_blank">
-              <img :src="graphLineUrl">
-              <img :src="graphUrl">
+              <div class="graph">
+                <v-img :src="graphLineUrl"></v-img>
+              </div>
+              <div class="graph">
+                <v-img :src="graphUrl"></v-img>
+              </div>
             </a>
-          </div>
-          <form class="output">
-            <v-textarea class="output-text" v-model="output" :placeholder="hint" rows="2" required></v-textarea>
-            <v-btn color="success" v-on:click="submit" :loading="loading">submit</v-btn>
-            <v-snackbar :value="succeed" color="success" timeout="3000" top>success</v-snackbar>
-          </form>
-          <div>
-            <div>{{ record }}</div>
-          </div>
-        </div>
-      </div>
+          </v-layout>
+          <v-layout column justify-center>
+            <v-form class="output">
+              <v-textarea
+                class="output-text"
+                v-model="output"
+                :placeholder="hint"
+                rows="2"
+                required
+              ></v-textarea>
+              <v-btn color="success" v-on:click="submit" :loading="loading">submit</v-btn>
+              <v-snackbar :value="succeed" color="success" timeout="3000" top>success</v-snackbar>
+            </v-form>
+            <div>
+              <div>{{ record }}</div>
+            </div>
+          </v-layout>
+        </v-container>
+      </v-content>
     </v-app>
   </section>
 </template>
@@ -50,6 +66,7 @@ export default class extends Vue {
   hint: string = "write today your output....";
   recoutUrl: string = `${process.env.recoutUrl}`;
 
+  drawer: boolean = false;
   output: string = "";
   loading: boolean = false;
   succeed: boolean = false;
@@ -91,12 +108,12 @@ export default class extends Vue {
 }
 
 .content {
-  width: 80%;
   margin: 0 auto;
+  width: 80%;
 
-  .output {
-    width: 80%;
-    margin: 10% auto;
+  .graph div {
+    margin: 10px auto;
+    width: 100%;
   }
 }
 </style>
