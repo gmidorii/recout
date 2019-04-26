@@ -27,17 +27,21 @@
             </a>
           </v-layout>
           <v-layout column justify-center>
-            <v-form class="output">
-              <v-textarea
-                class="output-text"
-                v-model="output"
-                :placeholder="hint"
-                rows="2"
-                required
-              ></v-textarea>
-              <v-btn color="success" v-on:click="submit" :loading="loading">submit</v-btn>
-              <v-snackbar :value="succeed" color="success" timeout="3000" top>success</v-snackbar>
-            </v-form>
+            <v-card>
+              <v-form class="output">
+                <v-textarea
+                  class="output-text"
+                  v-model="output"
+                  :label="hint"
+                  rows="2"
+                  required
+                  @keyup.ctrl.enter="submit"
+                ></v-textarea>
+                <v-btn block color="success" v-on:click="submit" :loading="loading">submit</v-btn>
+                <v-snackbar :value="succeed" color="success" :timeout="timeout" top>Success</v-snackbar>
+                <v-snackbar :value="failed" color="error" :timeout="timeout" top>Error</v-snackbar>
+              </v-form>
+            </v-card>
           </v-layout>
           <v-layout column>
             <div v-for="output in pastOutputs" :key="output.created_at">
@@ -72,12 +76,15 @@ export default class extends Vue {
     process.env.graph
   }?mode=line`;
   graphDetailUrl: string = `${process.env.pixelaUrl}/${process.env.graph}.html`;
-  hint: string = "write today your output....";
+  hint: string = "Write your output (Ctrl + Enter)";
   recoutUrl: string = `${process.env.recoutUrl}`;
+  timeout: number = 3000;
 
   drawer: boolean = false;
   loading: boolean = false;
   succeed: boolean = false;
+  failed: boolean = false;
+
   pastOutputs: Recout[] = [];
   output: string = "";
 
@@ -113,6 +120,9 @@ export default class extends Vue {
       });
     } catch (error) {
       console.log(error);
+      this.failed = true;
+      this.loading = false;
+      return;
     }
 
     this.loading = false;
@@ -144,6 +154,11 @@ export default class extends Vue {
 .content {
   margin: 0 auto;
   width: 80%;
+
+  .output {
+    margin: 0 auto;
+    width: 80%;
+  }
 
   .graph div {
     margin: 10px auto;
