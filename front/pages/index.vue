@@ -12,7 +12,7 @@
       <v-navigation-drawer v-model="drawer" cliped fixed app></v-navigation-drawer>
       <v-toolbar app fixed cliped-left>
         <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-        <v-toolbar-title>recout</v-toolbar-title>
+        <v-toolbar-title>Recout</v-toolbar-title>
       </v-toolbar>
       <v-content>
         <v-container class="content" fluid>
