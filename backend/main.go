@@ -1,8 +1,10 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -10,6 +12,13 @@ import (
 	"github.com/go-chi/render"
 	"google.golang.org/appengine"
 )
+
+const timeZone = "Asia/Tokyo"
+
+type Config struct {
+	Env      string
+	Location *time.Location
+}
 
 func main() {
 	r := chi.NewRouter()
@@ -25,14 +34,19 @@ func main() {
 	r.Use(c.Handler)
 	r.Get("/", indexHandler)
 
-	env := EnvVar{
-		Env: os.Getenv("RO_ENV"),
+	loc, err := time.LoadLocation(timeZone)
+	if err != nil {
+		log.Fatalf("failed location setting: %v", err)
+	}
+	config := Config{
+		Env:      os.Getenv("RO_ENV"),
+		Location: loc,
 	}
 
-	ch := CreateRecoutHandler{EnvVar: env}
+	ch := CreateRecoutHandler{Config: config}
 	r.Post("/recout", ch.ServeHTTP)
 
-	gh := GetRecoutHandler{EnvVar: env}
+	gh := GetRecoutHandler{Config: config}
 	r.Get("/recout", gh.ServeHTTP)
 
 	http.Handle("/", r)

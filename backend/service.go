@@ -12,7 +12,8 @@ import (
 )
 
 type Container struct {
-	Env string
+	Env      string
+	Location *time.Location
 }
 
 type RecoutService interface {
@@ -45,7 +46,7 @@ func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string
 	entity := RecoutEntity{
 		AccountID: "@gmidorii", //TODO: fix to user login account id
 		Message:   form.Message,
-		CreatedAt: time.Now().Unix(),
+		CreatedAt: time.Now().In(r.Ctn.Location).Unix(),
 	}
 	_, err = client.Put(ctx, key, &entity)
 	if err != nil {
@@ -74,7 +75,7 @@ func (r *recoutService) Fetch(ctx context.Context, form FetchForm) ([]RecoutResp
 	for i, e := range entities {
 		responses[i] = RecoutResponse{
 			Message:   e.Message,
-			CreatedAt: JSONTime(time.Unix(e.CreatedAt, 0)),
+			CreatedAt: JSONTime(time.Unix(e.CreatedAt, 0).In(r.Ctn.Location)),
 		}
 	}
 	return responses, nil

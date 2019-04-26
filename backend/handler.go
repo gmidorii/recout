@@ -10,10 +10,6 @@ import (
 	"google.golang.org/appengine"
 )
 
-type EnvVar struct {
-	Env string
-}
-
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
@@ -24,7 +20,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type CreateRecoutHandler struct {
-	EnvVar
+	Config
 }
 
 func (c CreateRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +35,8 @@ func (c CreateRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctn := Container{
-		Env: c.EnvVar.Env,
+		Env:      c.Config.Env,
+		Location: c.Config.Location,
 	}
 	service := NewRecoutService(ctn)
 	ctx := appengine.NewContext(r)
@@ -57,7 +54,7 @@ func (c CreateRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type GetRecoutHandler struct {
-	EnvVar
+	Config
 }
 
 func (g GetRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +65,8 @@ func (g GetRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctn := Container{
-		Env: g.EnvVar.Env,
+		Env:      g.Config.Env,
+		Location: g.Config.Location,
 	}
 	service := NewRecoutService(ctn)
 	res, err := service.Fetch(appengine.NewContext(r), form)
