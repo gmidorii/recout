@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/go-chi/render"
 	"google.golang.org/appengine"
 )
 
@@ -33,7 +34,7 @@ func (c CreateRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var form RecoutForm
 	if err := decoder.Decode(&form); err != nil {
 		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		render.Status(r, http.StatusBadRequest)
 		return
 	}
 
@@ -45,13 +46,14 @@ func (c CreateRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	uid, err := service.Create(ctx, form)
 	if err != nil {
 		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		render.Status(r, http.StatusInternalServerError)
 		return
 	}
 
 	log.Println(uid)
 	fmt.Fprint(w, uid)
 	w.WriteHeader(http.StatusOK)
+	render.Status(r, http.StatusOK)
 }
 
 type GetRecoutHandler struct {
@@ -61,7 +63,7 @@ type GetRecoutHandler struct {
 func (g GetRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	form, err := FactoryFetchForm(r.URL.Query())
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		render.Status(r, http.StatusBadRequest)
 		return
 	}
 
@@ -69,5 +71,13 @@ func (g GetRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Env: g.EnvVar.Env,
 	}
 	service := NewRecoutService(ctn)
-	service.Fetch(appengine.NewContext(r), form)
+	res, err := service.Fetch(appengine.NewContext(r), form)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		log.Printf("failed service :%v", err)
+		return
+	}
+
+	render.Status(r, http.StatusOK)
+	render.JSON(w, r, res)
 }

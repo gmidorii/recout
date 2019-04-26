@@ -5,12 +5,16 @@ import (
 	"os"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+	"github.com/go-chi/render"
 	"google.golang.org/appengine"
 )
 
 func main() {
 	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
