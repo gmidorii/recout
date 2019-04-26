@@ -38,8 +38,15 @@
               <v-btn color="success" v-on:click="submit" :loading="loading">submit</v-btn>
               <v-snackbar :value="succeed" color="success" timeout="3000" top>success</v-snackbar>
             </v-form>
-            <div>
-              <div>{{ record }}</div>
+          </v-layout>
+          <v-layout column>
+            <div v-for="output in pastOutputs" :key="output.created_at">
+              <v-card class="past-output">
+                <v-card-text>
+                  <div class="recout-date">{{ toDateFormat(output.created_at) }}</div>
+                  <div>{{ output.message }}</div>
+                </v-card-text>
+              </v-card>
             </div>
           </v-layout>
         </v-container>
@@ -53,6 +60,8 @@ import { Component, Vue } from "nuxt-property-decorator";
 import { State } from "vuex-class";
 import axios from "axios";
 import { basename } from "path";
+import { Recout } from "../types/index";
+import { parse, format } from "date-fns";
 
 @Component({
   components: {}
@@ -67,10 +76,24 @@ export default class extends Vue {
   recoutUrl: string = `${process.env.recoutUrl}`;
 
   drawer: boolean = false;
-  output: string = "";
   loading: boolean = false;
   succeed: boolean = false;
-  record: string = "";
+  pastOutputs: Recout[] = [];
+  output: string = "";
+
+  async created() {
+    this.pastOutputs = await this.loadOutput();
+  }
+
+  private async loadOutput(): Promise<Recout[]> {
+    try {
+      const res = await axios.get(`${this.recoutUrl}/recout`);
+      return res.data;
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
+  }
 
   public async submit() {
     this.loading = true;
@@ -93,9 +116,20 @@ export default class extends Vue {
     }
 
     this.loading = false;
-    this.record = this.output;
+    this.pastOutputs.unshift({
+      message: this.output,
+      created_at: this.toDateFormat(new Date())
+    });
     this.output = "";
     this.succeed = true;
+  }
+
+  public toDateFormat(
+    date: string | Date,
+    layout: string = "M/D HH:mm"
+  ): string {
+    const d = parse(date);
+    return format(d, layout);
   }
 }
 </script>
@@ -114,6 +148,14 @@ export default class extends Vue {
   .graph div {
     margin: 10px auto;
     width: 100%;
+  }
+
+  .past-output {
+    margin: 0.5em 0 0.5em 0;
+  }
+
+  .recout-date {
+    font-size: 0.8em;
   }
 }
 </style>
