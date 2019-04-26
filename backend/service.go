@@ -17,7 +17,7 @@ type Container struct {
 
 type RecoutService interface {
 	Create(ctx context.Context, form RecoutForm) (string, error)
-	Fetch(ctx context.Context, form FetchForm) error
+	Fetch(ctx context.Context, form FetchForm) ([]RecoutResponse, error)
 }
 
 type recoutService struct {
@@ -41,7 +41,7 @@ func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string
 	}
 	uid = id.String()
 
-	key := generateKey(client, "RecoutEntity", r.Ctn.Env, uid)
+	key := generateKey(client, recoutEntityName, r.Ctn.Env, uid)
 	entity := RecoutEntity{
 		AccountID: "@gmidorii", //TODO: fix to user login account id
 		Message:   form.Message,
@@ -54,10 +54,36 @@ func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string
 	return
 }
 
-func (r *recoutService) Fetch(ctx context.Context, form FetchForm) error {
-	return nil
+func (r *recoutService) Fetch(ctx context.Context, form FetchForm) ([]RecoutResponse, error) {
+	client, err := aedatastore.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer client.Close()
+
+	envEntity := generateEntityByEnv(recoutEntityName, r.Ctn.Env)
+	q := client.NewQuery(envEntity).Order("-CreatedAt").Limit(form.Limit)
+
+	entities := make([]RecoutEntity, 0, form.Limit)
+	_, err = client.GetAll(ctx, q, &entities)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed get all from datastore")
+	}
+
+	responses := make([]RecoutResponse, len(entities))
+	for i, e := range entities {
+		responses[i] = RecoutResponse{
+			Message:   e.Message,
+			CreatedAt: JSONTime(time.Unix(e.CreatedAt, 0)),
+		}
+	}
+	return responses, nil
+}
+
+func generateEntityByEnv(kind, env string) string {
+	return fmt.Sprintf("%v_%v", env, kind)
 }
 
 func generateKey(client datastore.Client, kind, env, uid string) datastore.Key {
-	return client.NameKey(fmt.Sprintf("%v_%v", env, kind), uid, nil)
+	return client.NameKey(generateEntityByEnv(kind, env), uid, nil)
 }
