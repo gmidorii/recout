@@ -2,7 +2,7 @@
 
 ## Overview
 
-Recout is a personal learning visualization tool.
+Recout is a personal output visualization tool.
 
 ## Structure
 
