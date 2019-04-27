@@ -37,6 +37,7 @@ func (c CreateRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctn := Container{
 		Env:      c.Config.Env,
 		Location: c.Config.Location,
+		Client:   c.Config.Client,
 	}
 	service := NewRecoutService(ctn)
 	ctx := appengine.NewContext(r)
@@ -67,6 +68,7 @@ func (g GetRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctn := Container{
 		Env:      g.Config.Env,
 		Location: g.Config.Location,
+		Client:   g.Config.Client,
 	}
 	service := NewRecoutService(ctn)
 	res, err := service.Fetch(appengine.NewContext(r), form)
@@ -97,9 +99,10 @@ func (p PostPixelaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctn := Container{
 		Env:      p.Config.Env,
 		Location: p.Config.Location,
+		Client:   p.Config.Client,
 	}
 	service := NewPixela(ctn)
-	if err := service.Save(form); err != nil {
+	if err := service.Save(appengine.NewContext(r), form); err != nil {
 		log.Println(err)
 		render.Status(r, http.StatusInternalServerError)
 		return

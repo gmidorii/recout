@@ -8,12 +8,14 @@ import (
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
 	"go.mercari.io/datastore"
-	"go.mercari.io/datastore/aedatastore"
 )
+
+const pixelaURL = "https://pixe.la/v1/users"
 
 type Container struct {
 	Env      string
 	Location *time.Location
+	Client   datastore.Client
 }
 
 type RecoutService interface {
@@ -30,11 +32,7 @@ func NewRecoutService(ctn Container) RecoutService {
 }
 
 func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string, err error) {
-	client, err := aedatastore.FromContext(ctx)
-	if err != nil {
-		return "", errors.Wrap(err, "failed init aeclient")
-	}
-	defer client.Close()
+	client := r.Ctn.Client
 
 	id, err := uuid.NewV4()
 	if err != nil {
@@ -44,7 +42,7 @@ func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string
 
 	key := generateKey(client, recoutEntityName, r.Ctn.Env, uid)
 	entity := RecoutEntity{
-		AccountID: "@gmidorii", //TODO: fix to user login account id
+		AccountID: "gmidorii", //TODO: fix to user login account id
 		Message:   form.Message,
 		CreatedAt: time.Now().In(r.Ctn.Location).Unix(),
 	}
@@ -56,17 +54,13 @@ func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string
 }
 
 func (r *recoutService) Fetch(ctx context.Context, form FetchForm) ([]RecoutResponse, error) {
-	client, err := aedatastore.FromContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-	defer client.Close()
+	client := r.Ctn.Client
 
 	envEntity := generateEntityByEnv(recoutEntityName, r.Ctn.Env)
 	q := client.NewQuery(envEntity).Order("-CreatedAt").Limit(form.Limit)
 
 	entities := make([]RecoutEntity, 0, form.Limit)
-	_, err = client.GetAll(ctx, q, &entities)
+	_, err := client.GetAll(ctx, q, &entities)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed get all from datastore")
 	}
@@ -90,7 +84,7 @@ func generateKey(client datastore.Client, kind, env, uid string) datastore.Key {
 }
 
 type Pixela interface {
-	Save(form PixelaForm) error
+	Save(ctx context.Context, form PixelaForm) error
 }
 
 type pixela struct {
@@ -101,6 +95,22 @@ func NewPixela(ctn Container) Pixela {
 	return &pixela{Ctn: ctn}
 }
 
-func (p *pixela) Save(form PixelaForm) error {
+func (p *pixela) Save(ctx context.Context, form PixelaForm) error {
+	client := p.Ctn.Client
+
+	id, err := uuid.NewV4()
+	if err != nil {
+		return errors.Wrap(err, "failed generate uuid")
+	}
+	uid := id.String()
+
+	key := generateKey(client, userEntityName, p.Ctn.Env, uid)
+	entity := UserEntity{
+		AccountID: form.AccountID,
+		PixelaURL: fmt.Sprintf("%v/%v/graphs/%v", pixelaURL, form.AccountID, form.Graph),
+	}
+	if _, err := client.Put(ctx, key, &entity); err != nil {
+		return errors.Wrap(err, "failed put user entity")
+	}
 	return nil
 }

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,6 +12,8 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
+	"go.mercari.io/datastore"
+	"go.mercari.io/datastore/aedatastore"
 	"google.golang.org/appengine"
 )
 
@@ -18,6 +22,24 @@ const timeZone = "Asia/Tokyo"
 type Config struct {
 	Env      string
 	Location *time.Location
+	Client   datastore.Client
+}
+
+func NewConfig() (Config, error) {
+	loc, err := time.LoadLocation(timeZone)
+	if err != nil {
+		return Config{}, fmt.Errorf("failed location setting: %v", err)
+	}
+
+	client, err := aedatastore.FromContext(context.Background())
+	if err != nil {
+		return Config{}, fmt.Errorf("faild create datastore client: %v", err)
+	}
+	return Config{
+		Env:      os.Getenv("RO_ENV"),
+		Location: loc,
+		Client:   client,
+	}, nil
 }
 
 func main() {
@@ -35,13 +57,9 @@ func main() {
 
 	r.Get("/", indexHandler)
 
-	loc, err := time.LoadLocation(timeZone)
+	config, err := NewConfig()
 	if err != nil {
-		log.Fatalf("failed location setting: %v", err)
-	}
-	config := Config{
-		Env:      os.Getenv("RO_ENV"),
-		Location: loc,
+		log.Fatalf("failed new config: %v", err)
 	}
 
 	ch := CreateRecoutHandler{Config: config}
