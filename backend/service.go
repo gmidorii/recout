@@ -83,19 +83,19 @@ func generateKey(client datastore.Client, kind, env, uid string) datastore.Key {
 	return client.NameKey(generateEntityByEnv(kind, env), uid, nil)
 }
 
-type Pixela interface {
-	Save(ctx context.Context, form PixelaForm) error
+type User interface {
+	Save(ctx context.Context, form UserForm) error
 }
 
-type pixela struct {
+type user struct {
 	Ctn Container
 }
 
-func NewPixela(ctn Container) Pixela {
-	return &pixela{Ctn: ctn}
+func NewUser(ctn Container) User {
+	return &user{Ctn: ctn}
 }
 
-func (p *pixela) Save(ctx context.Context, form PixelaForm) error {
+func (p *user) Save(ctx context.Context, form UserForm) error {
 	client := p.Ctn.Client
 
 	id, err := uuid.NewV4()

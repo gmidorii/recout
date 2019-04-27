@@ -68,8 +68,8 @@ func main() {
 	gh := GetRecoutHandler{Config: config}
 	r.Get("/recout", gh.ServeHTTP)
 
-	ph := PostPixelaHandler{Config: config}
-	r.Post("/pixela", ph.ServeHTTP)
+	ph := PostUserHandler{Config: config}
+	r.Post("/user", ph.ServeHTTP)
 
 	http.Handle("/", r)
 	appengine.Main()

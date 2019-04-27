@@ -25,7 +25,7 @@ func FactoryFetchForm(values url.Values) (FetchForm, error) {
 	return FetchForm{Limit: limit}, nil
 }
 
-type PixelaForm struct {
+type UserForm struct {
 	AccountID string `json:"account_id"`
 	Graph     string `json:"graph"`
 }
