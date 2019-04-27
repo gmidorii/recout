@@ -32,6 +32,7 @@ func main() {
 		MaxAge:           300,
 	})
 	r.Use(c.Handler)
+
 	r.Get("/", indexHandler)
 
 	loc, err := time.LoadLocation(timeZone)
@@ -48,6 +49,9 @@ func main() {
 
 	gh := GetRecoutHandler{Config: config}
 	r.Get("/recout", gh.ServeHTTP)
+
+	ph := PostPixelaHandler{Config: config}
+	r.Post("/pixela", ph.ServeHTTP)
 
 	http.Handle("/", r)
 	appengine.Main()

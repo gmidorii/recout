@@ -88,3 +88,19 @@ func generateEntityByEnv(kind, env string) string {
 func generateKey(client datastore.Client, kind, env, uid string) datastore.Key {
 	return client.NameKey(generateEntityByEnv(kind, env), uid, nil)
 }
+
+type Pixela interface {
+	Save(form PixelaForm) error
+}
+
+type pixela struct {
+	Ctn Container
+}
+
+func NewPixela(ctn Container) Pixela {
+	return &pixela{Ctn: ctn}
+}
+
+func (p *pixela) Save(form PixelaForm) error {
+	return nil
+}

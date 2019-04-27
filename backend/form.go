@@ -25,6 +25,11 @@ func FactoryFetchForm(values url.Values) (FetchForm, error) {
 	return FetchForm{Limit: limit}, nil
 }
 
+type PixelaForm struct {
+	AccountID string `json:"account_id"`
+	Graph     string `json:"graph"`
+}
+
 func getIntValue(values url.Values, key string, defaultValue int) (int, error) {
 	v := values.Get(key)
 	if v == "" {

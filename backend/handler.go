@@ -79,3 +79,31 @@ func (g GetRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	render.Status(r, http.StatusOK)
 	render.JSON(w, r, res)
 }
+
+type PostPixelaHandler struct {
+	Config
+}
+
+func (p PostPixelaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+	var form PixelaForm
+	if err := decoder.Decode(&form); err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+
+	ctn := Container{
+		Env:      p.Config.Env,
+		Location: p.Config.Location,
+	}
+	service := NewPixela(ctn)
+	if err := service.Save(form); err != nil {
+		log.Println(err)
+		render.Status(r, http.StatusInternalServerError)
+		return
+	}
+
+	render.Status(r, http.StatusOK)
+}
