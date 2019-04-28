@@ -1,4 +1,4 @@
-package main
+package response
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ func (j JSONTime) MarshalJSON() ([]byte, error) {
 	return []byte(stime), nil
 }
 
-type RecoutResponse struct {
+type RecoutFetch struct {
 	Message   string   `json:"message"`
 	CreatedAt JSONTime `json:"created_at"`
 }

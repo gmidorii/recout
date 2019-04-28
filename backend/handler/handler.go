@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"encoding/json"
@@ -6,11 +6,14 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gmidorii/recout/backend/app"
+	"github.com/gmidorii/recout/backend/config"
+	"github.com/gmidorii/recout/backend/form"
 	"github.com/go-chi/render"
 	"google.golang.org/appengine"
 )
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
+func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
 		return
@@ -19,27 +22,27 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Hello World!!")
 }
 
-type CreateRecoutHandler struct {
-	Config
+type CreateRecout struct {
+	config.Config
 }
 
-func (c CreateRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (c CreateRecout) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 
-	var form RecoutForm
+	var form form.Recout
 	if err := decoder.Decode(&form); err != nil {
 		log.Println(err)
 		render.Status(r, http.StatusBadRequest)
 		return
 	}
 
-	ctn := Container{
+	ctn := app.Container{
 		Env:      c.Config.Env,
 		Location: c.Config.Location,
 		Client:   c.Config.Client,
 	}
-	service := NewRecoutService(ctn)
+	service := app.NewRecoutService(ctn)
 	ctx := appengine.NewContext(r)
 	uid, err := service.Create(ctx, form)
 	if err != nil {
@@ -54,23 +57,23 @@ func (c CreateRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	render.Status(r, http.StatusOK)
 }
 
-type GetRecoutHandler struct {
-	Config
+type GetRecout struct {
+	config.Config
 }
 
-func (g GetRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	form, err := FactoryFetchForm(r.URL.Query())
+func (g GetRecout) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	form, err := form.FactoryFetchForm(r.URL.Query())
 	if err != nil {
 		render.Status(r, http.StatusBadRequest)
 		return
 	}
 
-	ctn := Container{
+	ctn := app.Container{
 		Env:      g.Config.Env,
 		Location: g.Config.Location,
 		Client:   g.Config.Client,
 	}
-	service := NewRecoutService(ctn)
+	service := app.NewRecoutService(ctn)
 	res, err := service.Fetch(appengine.NewContext(r), form)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
@@ -82,26 +85,26 @@ func (g GetRecoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, res)
 }
 
-type PostUserHandler struct {
-	Config
+type PostUser struct {
+	config.Config
 }
 
-func (p PostUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (p PostUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
-	var form UserForm
+	var form form.User
 	if err := decoder.Decode(&form); err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		log.Println(err)
 		return
 	}
 
-	ctn := Container{
+	ctn := app.Container{
 		Env:      p.Config.Env,
 		Location: p.Config.Location,
 		Client:   p.Config.Client,
 	}
-	service := NewUser(ctn)
+	service := app.NewUser(ctn)
 	if err := service.Save(appengine.NewContext(r), form); err != nil {
 		log.Println(err)
 		render.Status(r, http.StatusInternalServerError)

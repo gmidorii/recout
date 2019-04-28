@@ -1,4 +1,4 @@
-package main
+package form
 
 import (
 	"net/url"
@@ -9,23 +9,23 @@ import (
 
 const defaultLimit = 10
 
-type RecoutForm struct {
+type Recout struct {
 	Message string `json:message`
 }
 
-type FetchForm struct {
+type RecoutFetch struct {
 	Limit int
 }
 
-func FactoryFetchForm(values url.Values) (FetchForm, error) {
+func FactoryFetchForm(values url.Values) (RecoutFetch, error) {
 	limit, err := getIntValue(values, "limit", defaultLimit)
 	if err != nil {
-		return FetchForm{}, errors.Wrap(err, "failed parse query key=limit")
+		return RecoutFetch{}, errors.Wrap(err, "failed parse query key=limit")
 	}
-	return FetchForm{Limit: limit}, nil
+	return RecoutFetch{Limit: limit}, nil
 }
 
-type UserForm struct {
+type User struct {
 	AccountID string `json:"account_id"`
 	Graph     string `json:"graph"`
 }

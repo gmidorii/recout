@@ -1,46 +1,17 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"time"
 
+	"github.com/gmidorii/recout/backend/config"
+	"github.com/gmidorii/recout/backend/handler"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
-	"go.mercari.io/datastore"
-	"go.mercari.io/datastore/aedatastore"
 	"google.golang.org/appengine"
 )
-
-const timeZone = "Asia/Tokyo"
-
-type Config struct {
-	Env      string
-	Location *time.Location
-	Client   datastore.Client
-}
-
-func NewConfig() (Config, error) {
-	loc, err := time.LoadLocation(timeZone)
-	if err != nil {
-		return Config{}, fmt.Errorf("failed location setting: %v", err)
-	}
-
-	client, err := aedatastore.FromContext(context.Background())
-	if err != nil {
-		return Config{}, fmt.Errorf("faild create datastore client: %v", err)
-	}
-	return Config{
-		Env:      os.Getenv("RO_ENV"),
-		Location: loc,
-		Client:   client,
-	}, nil
-}
 
 func main() {
 	r := chi.NewRouter()
@@ -55,20 +26,20 @@ func main() {
 	})
 	r.Use(c.Handler)
 
-	r.Get("/", indexHandler)
+	r.Get("/", handler.IndexHandler)
 
-	config, err := NewConfig()
+	config, err := config.New()
 	if err != nil {
 		log.Fatalf("failed new config: %v", err)
 	}
 
-	ch := CreateRecoutHandler{Config: config}
+	ch := handler.CreateRecout{Config: config}
 	r.Post("/recout", ch.ServeHTTP)
 
-	gh := GetRecoutHandler{Config: config}
+	gh := handler.GetRecout{Config: config}
 	r.Get("/recout", gh.ServeHTTP)
 
-	ph := PostUserHandler{Config: config}
+	ph := handler.PostUser{Config: config}
 	r.Post("/user", ph.ServeHTTP)
 
 	http.Handle("/", r)

@@ -1,17 +1,17 @@
-package main
+package entity
 
 const (
-	recoutEntityName = "RecoutEntity"
-	userEntityName   = "UserEntity"
+	RecoutEntityName = "RecoutEntity"
+	UserEntityName   = "UserEntity"
 )
 
-type RecoutEntity struct {
+type Recout struct {
 	AccountID string
 	Message   string
 	CreatedAt int64
 }
 
-type UserEntity struct {
+type User struct {
 	AccountID string
 	PixelaURL string
 }

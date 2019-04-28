@@ -1,10 +1,13 @@
-package main
+package app
 
 import (
 	"context"
 	"fmt"
 	"time"
 
+	"github.com/gmidorii/recout/backend/form"
+	"github.com/gmidorii/recout/backend/infra/entity"
+	"github.com/gmidorii/recout/backend/response"
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
 	"go.mercari.io/datastore"
@@ -19,8 +22,8 @@ type Container struct {
 }
 
 type RecoutService interface {
-	Create(ctx context.Context, form RecoutForm) (string, error)
-	Fetch(ctx context.Context, form FetchForm) ([]RecoutResponse, error)
+	Create(ctx context.Context, form form.Recout) (string, error)
+	Fetch(ctx context.Context, form form.RecoutFetch) ([]response.RecoutFetch, error)
 }
 
 type recoutService struct {
@@ -31,7 +34,7 @@ func NewRecoutService(ctn Container) RecoutService {
 	return &recoutService{Ctn: ctn}
 }
 
-func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string, err error) {
+func (r *recoutService) Create(ctx context.Context, form form.Recout) (uid string, err error) {
 	client := r.Ctn.Client
 
 	id, err := uuid.NewV4()
@@ -40,8 +43,8 @@ func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string
 	}
 	uid = id.String()
 
-	key := generateKey(client, recoutEntityName, r.Ctn.Env, uid)
-	entity := RecoutEntity{
+	key := generateKey(client, entity.RecoutEntityName, r.Ctn.Env, uid)
+	entity := entity.Recout{
 		AccountID: "gmidorii", //TODO: fix to user login account id
 		Message:   form.Message,
 		CreatedAt: time.Now().In(r.Ctn.Location).Unix(),
@@ -53,23 +56,23 @@ func (r *recoutService) Create(ctx context.Context, form RecoutForm) (uid string
 	return
 }
 
-func (r *recoutService) Fetch(ctx context.Context, form FetchForm) ([]RecoutResponse, error) {
+func (r *recoutService) Fetch(ctx context.Context, form form.RecoutFetch) ([]response.RecoutFetch, error) {
 	client := r.Ctn.Client
 
-	envEntity := generateEntityByEnv(recoutEntityName, r.Ctn.Env)
+	envEntity := generateEntityByEnv(entity.RecoutEntityName, r.Ctn.Env)
 	q := client.NewQuery(envEntity).Order("-CreatedAt").Limit(form.Limit)
 
-	entities := make([]RecoutEntity, 0, form.Limit)
+	entities := make([]entity.Recout, 0, form.Limit)
 	_, err := client.GetAll(ctx, q, &entities)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed get all from datastore")
 	}
 
-	responses := make([]RecoutResponse, len(entities))
+	responses := make([]response.RecoutFetch, len(entities))
 	for i, e := range entities {
-		responses[i] = RecoutResponse{
+		responses[i] = response.RecoutFetch{
 			Message:   e.Message,
-			CreatedAt: JSONTime(time.Unix(e.CreatedAt, 0).In(r.Ctn.Location)),
+			CreatedAt: response.JSONTime(time.Unix(e.CreatedAt, 0).In(r.Ctn.Location)),
 		}
 	}
 	return responses, nil
@@ -84,7 +87,7 @@ func generateKey(client datastore.Client, kind, env, uid string) datastore.Key {
 }
 
 type User interface {
-	Save(ctx context.Context, form UserForm) error
+	Save(ctx context.Context, form form.User) error
 }
 
 type user struct {
@@ -95,7 +98,7 @@ func NewUser(ctn Container) User {
 	return &user{Ctn: ctn}
 }
 
-func (p *user) Save(ctx context.Context, form UserForm) error {
+func (p *user) Save(ctx context.Context, form form.User) error {
 	client := p.Ctn.Client
 
 	id, err := uuid.NewV4()
@@ -104,8 +107,8 @@ func (p *user) Save(ctx context.Context, form UserForm) error {
 	}
 	uid := id.String()
 
-	key := generateKey(client, userEntityName, p.Ctn.Env, uid)
-	entity := UserEntity{
+	key := generateKey(client, entity.UserEntityName, p.Ctn.Env, uid)
+	entity := entity.User{
 		AccountID: form.AccountID,
 		PixelaURL: fmt.Sprintf("%v/%v/graphs/%v", pixelaURL, form.AccountID, form.Graph),
 	}
