@@ -23,11 +23,11 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Hello World!!")
 }
 
-type CreateRecout struct {
+type Recout struct {
 	config.Config
 }
 
-func (c CreateRecout) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (rh Recout) Post(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 
@@ -39,10 +39,10 @@ func (c CreateRecout) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctn := app.Container{
-		Env:      c.Config.Env,
-		Location: c.Config.Location,
+		Env:      rh.Config.Env,
+		Location: rh.Config.Location,
 	}
-	service, err := injector.InitRecoutApp(c.Config.Client, ctn, ctn.Env)
+	service, err := injector.InitRecoutApp(rh.Config.Client, ctn, ctn.Env)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -62,11 +62,7 @@ func (c CreateRecout) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	render.Status(r, http.StatusOK)
 }
 
-type GetRecout struct {
-	config.Config
-}
-
-func (g GetRecout) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (rh Recout) Get(w http.ResponseWriter, r *http.Request) {
 	form, err := form.FactoryFetchForm(r.URL.Query())
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -74,10 +70,10 @@ func (g GetRecout) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctn := app.Container{
-		Env:      g.Config.Env,
-		Location: g.Config.Location,
+		Env:      rh.Config.Env,
+		Location: rh.Config.Location,
 	}
-	service, err := injector.InitRecoutApp(g.Config.Client, ctn, ctn.Env)
+	service, err := injector.InitRecoutApp(rh.Config.Client, ctn, ctn.Env)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -94,11 +90,11 @@ func (g GetRecout) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, res)
 }
 
-type PostUser struct {
+type User struct {
 	config.Config
 }
 
-func (p PostUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (u User) Post(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 	var form form.User
@@ -109,10 +105,10 @@ func (p PostUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctn := app.Container{
-		Env:      p.Config.Env,
-		Location: p.Config.Location,
+		Env:      u.Config.Env,
+		Location: u.Config.Location,
 	}
-	service, err := injector.InitUserApp(p.Config.Client, ctn, ctn.Env)
+	service, err := injector.InitUserApp(u.Config.Client, ctn, ctn.Env)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
