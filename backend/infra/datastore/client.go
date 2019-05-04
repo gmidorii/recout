@@ -83,6 +83,22 @@ func (u *userClient) Fetch(ctx context.Context, offset int, limit int) ([]entity
 	return entities, nil
 }
 
+func (u *userClient) Get(ctx context.Context, accountID string) (entity.User, error) {
+	q := u.gClient.NewQuery(generateEntityByEnv(entity.RecoutEntityName, u.env)).
+		Filter("account_id = ", accountID).
+		Limit(1)
+
+	// user entity is only by account_id.
+	entities := make([]entity.User, 0, 1)
+	if _, err := u.gClient.GetAll(ctx, q, &entities); err != nil {
+		return entity.User{}, errors.Wrap(err, "failed user get.")
+	}
+	if len(entities) != 1 {
+		return entity.User{}, fmt.Errorf("unexpected entities len got=%v, want=%v", len(entities), 1)
+	}
+	return entities[0], nil
+}
+
 func generateUUID() (string, error) {
 	id, err := uuid.NewV4()
 	if err != nil {
