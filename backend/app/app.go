@@ -26,24 +26,24 @@ func NewContainer(env string, location time.Location) Container {
 	}
 }
 
-type RecoutService interface {
+type Recout interface {
 	Create(ctx context.Context, form form.Recout) (string, error)
 	Fetch(ctx context.Context, form form.RecoutFetch) ([]response.RecoutFetch, error)
 }
 
-type recoutService struct {
+type recout struct {
 	ctn        Container
 	repoRecout repository.Recout
 }
 
-func NewRecoutService(ctn Container, repoRecout repository.Recout) RecoutService {
-	return &recoutService{
+func NewRecout(ctn Container, repoRecout repository.Recout) Recout {
+	return &recout{
 		ctn:        ctn,
 		repoRecout: repoRecout,
 	}
 }
 
-func (r *recoutService) Create(ctx context.Context, form form.Recout) (uid string, err error) {
+func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err error) {
 	entity := entity.Recout{
 		AccountID: "gmidorii", //TODO: fix to user login account id
 		Message:   form.Message,
@@ -53,7 +53,7 @@ func (r *recoutService) Create(ctx context.Context, form form.Recout) (uid strin
 	return r.repoRecout.Put(ctx, entity)
 }
 
-func (r *recoutService) Fetch(ctx context.Context, form form.RecoutFetch) ([]response.RecoutFetch, error) {
+func (r *recout) Fetch(ctx context.Context, form form.RecoutFetch) ([]response.RecoutFetch, error) {
 	entities, err := r.repoRecout.Fetch(ctx, 0, form.Limit)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed fetch recout entity from datastore")

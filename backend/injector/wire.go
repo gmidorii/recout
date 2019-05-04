@@ -9,8 +9,8 @@ import (
 	"go.mercari.io/datastore"
 )
 
-func InitRecoutApp(gClient datastore.Client, ctn app.Container, env string) (r app.RecoutService, err error) {
-	wire.Build(lds.NewRecoutClient, app.NewRecoutService)
+func InitRecoutApp(gClient datastore.Client, ctn app.Container, env string) (r app.Recout, err error) {
+	wire.Build(lds.NewRecoutClient, app.NewRecout)
 	return
 }
 
