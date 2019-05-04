@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/gmidorii/recout/backend/form"
@@ -87,8 +86,9 @@ func NewUser(ctn Container, repoUser repository.User) User {
 
 func (p *user) Save(ctx context.Context, form form.User) error {
 	entity := entity.User{
-		AccountID: form.AccountID,
-		PixelaURL: fmt.Sprintf("%v/%v/graphs/%v", pixelaURL, form.AccountID, form.Graph),
+		AccountID:   form.AccountID,
+		PixelaGraph: form.PixelaGraph,
+		PixelaToken: form.PixelaToken,
 	}
 	if _, err := p.repoUser.Put(ctx, entity); err != nil {
 		return errors.Wrap(err, "failed create user")

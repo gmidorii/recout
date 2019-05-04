@@ -26,8 +26,9 @@ func FactoryFetchForm(values url.Values) (RecoutFetch, error) {
 }
 
 type User struct {
-	AccountID string `json:"account_id"`
-	Graph     string `json:"graph"`
+	AccountID   string `json:"account_id"`
+	PixelaGraph string `json:"pixela_graph"`
+	PixelaToken string `json:"pixela_token"`
 }
 
 func getIntValue(values url.Values, key string, defaultValue int) (int, error) {
