@@ -9,7 +9,6 @@ import (
 	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
 	"go.mercari.io/datastore"
-	"go.mercari.io/datastore/aedatastore"
 )
 
 type recoutClient struct {
@@ -17,11 +16,7 @@ type recoutClient struct {
 	env     string
 }
 
-func NewRecoutClient(ctx context.Context, env string) (repository.Recout, error) {
-	gClient, err := aedatastore.FromContext(ctx)
-	if err != nil {
-		return &recoutClient{}, err
-	}
+func NewRecoutClient(gClient datastore.Client, env string) (repository.Recout, error) {
 	return &recoutClient{
 		gClient: gClient,
 		env:     env,
@@ -34,7 +29,7 @@ func (c *recoutClient) Put(ctx context.Context, e entity.Recout) (string, error)
 		return "", err
 	}
 	key := generateKey(c.gClient, entity.RecoutEntityName, c.env, generatedUUID)
-	if _, err := c.gClient.Put(ctx, key, e); err != nil {
+	if _, err := c.gClient.Put(ctx, key, &e); err != nil {
 		return "", errors.Wrap(err, "failed put recout entity to datastore")
 	}
 	return generatedUUID, nil
@@ -57,11 +52,7 @@ type userClient struct {
 	env     string
 }
 
-func NewUserClient(ctx context.Context, env string) (repository.User, error) {
-	gClient, err := aedatastore.FromContext(ctx)
-	if err != nil {
-		return &userClient{}, err
-	}
+func NewUserClient(gClient datastore.Client, env string) (repository.User, error) {
 	return &userClient{
 		gClient: gClient,
 		env:     env,
@@ -74,7 +65,7 @@ func (u *userClient) Put(ctx context.Context, e entity.User) (string, error) {
 		return "", err
 	}
 	key := generateKey(u.gClient, entity.UserEntityName, u.env, generatedUUID)
-	if _, err := u.gClient.Put(ctx, key, e); err != nil {
+	if _, err := u.gClient.Put(ctx, key, &e); err != nil {
 		return "", errors.Wrap(err, "failed put recout entity to datastore")
 	}
 	return generatedUUID, nil

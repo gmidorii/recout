@@ -19,6 +19,13 @@ type Container struct {
 	Location *time.Location
 }
 
+func NewContainer(env string, location time.Location) Container {
+	return Container{
+		Env:      env,
+		Location: &location,
+	}
+}
+
 type RecoutService interface {
 	Create(ctx context.Context, form form.Recout) (string, error)
 	Fetch(ctx context.Context, form form.RecoutFetch) ([]response.RecoutFetch, error)

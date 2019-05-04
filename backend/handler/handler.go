@@ -9,6 +9,7 @@ import (
 	"github.com/gmidorii/recout/backend/app"
 	"github.com/gmidorii/recout/backend/config"
 	"github.com/gmidorii/recout/backend/form"
+	"github.com/gmidorii/recout/backend/injector"
 	"github.com/go-chi/render"
 	"google.golang.org/appengine"
 )
@@ -33,21 +34,25 @@ func (c CreateRecout) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var form form.Recout
 	if err := decoder.Decode(&form); err != nil {
 		log.Println(err)
-		render.Status(r, http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	ctn := app.Container{
 		Env:      c.Config.Env,
 		Location: c.Config.Location,
-		Client:   c.Config.Client,
 	}
-	service := app.NewRecoutService(ctn)
+	service, err := injector.InitRecoutApp(c.Config.Client, ctn, ctn.Env)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	ctx := appengine.NewContext(r)
 	uid, err := service.Create(ctx, form)
 	if err != nil {
 		log.Println(err)
-		render.Status(r, http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -64,20 +69,24 @@ type GetRecout struct {
 func (g GetRecout) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	form, err := form.FactoryFetchForm(r.URL.Query())
 	if err != nil {
-		render.Status(r, http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	ctn := app.Container{
 		Env:      g.Config.Env,
 		Location: g.Config.Location,
-		Client:   g.Config.Client,
 	}
-	service := app.NewRecoutService(ctn)
+	service, err := injector.InitRecoutApp(g.Config.Client, ctn, ctn.Env)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	res, err := service.Fetch(appengine.NewContext(r), form)
 	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
 		log.Printf("failed service :%v", err)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -94,7 +103,7 @@ func (p PostUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	var form form.User
 	if err := decoder.Decode(&form); err != nil {
-		render.Status(r, http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		log.Println(err)
 		return
 	}
@@ -102,12 +111,16 @@ func (p PostUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctn := app.Container{
 		Env:      p.Config.Env,
 		Location: p.Config.Location,
-		Client:   p.Config.Client,
 	}
-	service := app.NewUser(ctn)
+	service, err := injector.InitUserApp(p.Config.Client, ctn, ctn.Env)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	if err := service.Save(appengine.NewContext(r), form); err != nil {
 		log.Println(err)
-		render.Status(r, http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
