@@ -2,13 +2,12 @@ package app
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"net/http"
 	"time"
 
 	"github.com/gmidorii/recout/backend/form"
 	"github.com/gmidorii/recout/backend/infra/entity"
+	"github.com/gmidorii/recout/backend/infra/pixela"
 	"github.com/gmidorii/recout/backend/infra/repository"
 	"github.com/gmidorii/recout/backend/response"
 	"github.com/pkg/errors"
@@ -37,16 +36,23 @@ type Recout interface {
 }
 
 type recout struct {
-	ctn        Container
-	repoRecout repository.Recout
-	repoUser   repository.User
+	ctn          Container
+	repoRecout   repository.Recout
+	repoUser     repository.User
+	pixelaClient pixela.Client
 }
 
-func NewRecout(ctn Container, repoRecout repository.Recout, repoUser repository.User) Recout {
+func NewRecout(
+	ctn Container,
+	repoRecout repository.Recout,
+	repoUser repository.User,
+	pixelaClient pixela.Client,
+) Recout {
 	return &recout{
-		ctn:        ctn,
-		repoRecout: repoRecout,
-		repoUser:   repoUser,
+		ctn:          ctn,
+		repoRecout:   repoRecout,
+		repoUser:     repoUser,
+		pixelaClient: pixelaClient,
 	}
 }
 
@@ -60,18 +66,13 @@ func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err 
 		return "", errors.Wrapf(err, "failed fetching user entity id = %v", accountID)
 	}
 
-	url := fmt.Sprintf("%v/%v/graphs/%v/increment", pixelaURL, userEntity.AccountID, userEntity.PixelaGraph)
-	log.Println(url)
-	req, err := http.NewRequest("PUT", url, nil)
-	if err != nil {
-		return "", errors.Wrap(err, "failed new http request")
+	if err := r.pixelaClient.Increment(userEntity.AccountID, userEntity.PixelaToken, userEntity.PixelaGraph); err != nil {
+		return "", errors.Wrapf(
+			err,
+			"failed pixela graph increment (user=%v, graph=%v)",
+			userEntity.AccountID, userEntity.PixelaGraph,
+		)
 	}
-	req.Header.Add(pixelaHeaderToken, userEntity.PixelaToken)
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
 
 	entity := entity.Recout{
 		AccountID: "gmidorii",
