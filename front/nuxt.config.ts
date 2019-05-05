@@ -2,7 +2,6 @@ export default {
   env: {
     pixelaUrl: "https://pixe.la/v1/users/gmidorii/graphs",
     graph: process.env.RECOUT_PIXELA_GRAPH,
-    token: process.env.RECOUT_PIXELA_TOKEN,
     recoutUrl: process.env.RECOUT_URL
   },
   head: {
@@ -14,7 +13,7 @@ export default {
         hid: "description",
         name: "description",
         content: "Nuxt.js TypeScript project"
-      } 
+      }
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
   },

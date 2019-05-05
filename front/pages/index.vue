@@ -16,17 +16,19 @@
       </v-toolbar>
       <v-content>
         <v-container class="content" fluid>
-          <v-layout column justify-center>
+          <v-layout column justify-center class="part-content">
+            <h3>Graph</h3>
             <a :href="graphDetailUrl" target="_blank">
-              <div class="graph">
-                <v-img :src="graphLineUrl"></v-img>
-              </div>
               <div class="graph">
                 <v-img :src="graphUrl"></v-img>
               </div>
+              <div class="graph">
+                <v-img :src="graphLineUrl"></v-img>
+              </div>
             </a>
           </v-layout>
-          <v-layout column justify-center>
+          <v-layout column justify-center class="part-content">
+            <h3>Output</h3>
             <v-card>
               <v-form class="output">
                 <v-textarea
@@ -43,7 +45,8 @@
               </v-form>
             </v-card>
           </v-layout>
-          <v-layout column>
+          <v-layout column class="part-content">
+            <h3>Record</h3>
             <div v-for="output in pastOutputs" :key="output.created_at">
               <v-card class="past-output">
                 <v-card-text>
@@ -71,6 +74,7 @@ import { parse, format } from "date-fns";
   components: {}
 })
 export default class extends Vue {
+  // TODO: fetch graph name and user name from recout api.
   graphUrl: string = `${process.env.pixelaUrl}/${process.env.graph}`;
   graphLineUrl: string = `${process.env.pixelaUrl}/${
     process.env.graph
@@ -104,17 +108,7 @@ export default class extends Vue {
 
   public async submit() {
     this.loading = true;
-
-    const instance = axios.create({
-      baseURL: this.graphUrl,
-      timeout: 5000,
-      headers: {
-        "X-USER-TOKEN": process.env.token
-      }
-    });
-
     try {
-      const res = await instance.put("/increment");
       await axios.post(`${this.recoutUrl}/recout`, {
         message: this.output
       });
@@ -154,6 +148,14 @@ export default class extends Vue {
 .content {
   margin: 0 auto;
   width: 80%;
+
+  .part-content {
+    margin-top: 20px;
+
+    h3 {
+      margin: 0 auto;
+    }
+  }
 
   .output {
     margin: 0 auto;
