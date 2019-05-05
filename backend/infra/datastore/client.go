@@ -37,7 +37,7 @@ func (c *recoutClient) Put(ctx context.Context, e entity.Recout) (string, error)
 
 func (c *recoutClient) Fetch(ctx context.Context, offset int, limit int) ([]entity.Recout, error) {
 	//TODO: use offset query.
-	q := c.gClient.NewQuery(generateEntityByEnv(entity.RecoutEntityName, c.env)).Order("-CreatedAt").Limit(limit)
+	q := c.gClient.NewQuery(generateEntityByEnv(entity.RecoutEntityName, c.env)).Order("-created_at").Limit(limit)
 
 	entities := make([]entity.Recout, 0, limit)
 	_, err := c.gClient.GetAll(ctx, q, &entities)
