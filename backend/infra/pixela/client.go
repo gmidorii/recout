@@ -14,7 +14,7 @@ const (
 )
 
 type Client interface {
-	Increment(userID, graph string) error
+	Increment(userID, token, graph string) error
 }
 
 type client struct {
@@ -34,7 +34,7 @@ func (c *client) Increment(userID, token, graph string) error {
 	req.Header.Add(pixelaHeaderToken, token)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return "", err
+		return err
 	}
 	defer resp.Body.Close()
 	return nil
