@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/gmidorii/recout/backend/form"
@@ -59,7 +58,6 @@ func NewRecout(
 func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err error) {
 	//TODO: fix to user login account id
 	const accountID = "gmidorii"
-	log.Println(r.ctn.Env)
 
 	userEntity, err := r.repoUser.Get(ctx, accountID)
 	if err != nil {
