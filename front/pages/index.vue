@@ -38,6 +38,7 @@
                   rows="2"
                   required
                   @keyup.ctrl.enter="submit"
+                  auto-grow
                 ></v-textarea>
                 <v-btn block color="success" v-on:click="submit" :loading="loading">submit</v-btn>
                 <v-snackbar :value="succeed" color="success" :timeout="timeout" top>Success</v-snackbar>
@@ -51,7 +52,7 @@
               <v-card class="past-output">
                 <v-card-text>
                   <div class="recout-date">{{ toDateFormat(output.created_at) }}</div>
-                  <div>{{ output.message }}</div>
+                  <div style="white-space: pre-line">{{ output.message }}</div>
                 </v-card-text>
               </v-card>
             </div>
