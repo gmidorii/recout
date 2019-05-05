@@ -2,6 +2,9 @@ package app
 
 import (
 	"context"
+	"fmt"
+	"log"
+	"net/http"
 	"time"
 
 	"github.com/gmidorii/recout/backend/form"
@@ -11,7 +14,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-const pixelaURL = "https://pixe.la/v1/users"
+const (
+	pixelaURL         = "https://pixe.la/v1/users"
+	pixelaHeaderToken = "X-USER-TOKEN"
+)
 
 type Container struct {
 	Env      string
@@ -33,18 +39,42 @@ type Recout interface {
 type recout struct {
 	ctn        Container
 	repoRecout repository.Recout
+	repoUser   repository.User
 }
 
-func NewRecout(ctn Container, repoRecout repository.Recout) Recout {
+func NewRecout(ctn Container, repoRecout repository.Recout, repoUser repository.User) Recout {
 	return &recout{
 		ctn:        ctn,
 		repoRecout: repoRecout,
+		repoUser:   repoUser,
 	}
 }
 
 func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err error) {
+	//TODO: fix to user login account id
+	const accountID = "gmidorii"
+	log.Println(r.ctn.Env)
+
+	userEntity, err := r.repoUser.Get(ctx, accountID)
+	if err != nil {
+		return "", errors.Wrapf(err, "failed fetching user entity id = %v", accountID)
+	}
+
+	url := fmt.Sprintf("%v/%v/graphs/%v/increment", pixelaURL, userEntity.AccountID, userEntity.PixelaGraph)
+	log.Println(url)
+	req, err := http.NewRequest("PUT", url, nil)
+	if err != nil {
+		return "", errors.Wrap(err, "failed new http request")
+	}
+	req.Header.Add(pixelaHeaderToken, userEntity.PixelaToken)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
 	entity := entity.Recout{
-		AccountID: "gmidorii", //TODO: fix to user login account id
+		AccountID: "gmidorii",
 		Message:   form.Message,
 		CreatedAt: time.Now().In(r.ctn.Location).Unix(),
 	}

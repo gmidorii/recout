@@ -73,7 +73,7 @@ func (u *userClient) Put(ctx context.Context, e entity.User) (string, error) {
 
 func (u *userClient) Fetch(ctx context.Context, offset int, limit int) ([]entity.User, error) {
 	//TODO: use offset query.
-	q := u.gClient.NewQuery(generateEntityByEnv(entity.RecoutEntityName, u.env)).Order("-CreatedAt").Limit(limit)
+	q := u.gClient.NewQuery(generateEntityByEnv(entity.UserEntityName, u.env)).Order("-CreatedAt").Limit(limit)
 
 	entities := make([]entity.User, 0, limit)
 	_, err := u.gClient.GetAll(ctx, q, &entities)
@@ -84,7 +84,7 @@ func (u *userClient) Fetch(ctx context.Context, offset int, limit int) ([]entity
 }
 
 func (u *userClient) Get(ctx context.Context, accountID string) (entity.User, error) {
-	q := u.gClient.NewQuery(generateEntityByEnv(entity.RecoutEntityName, u.env)).
+	q := u.gClient.NewQuery(generateEntityByEnv(entity.UserEntityName, u.env)).
 		Filter("account_id = ", accountID).
 		Limit(1)
 

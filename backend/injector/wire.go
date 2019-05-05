@@ -10,7 +10,7 @@ import (
 )
 
 func InitRecoutApp(gClient datastore.Client, ctn app.Container, env string) (r app.Recout, err error) {
-	wire.Build(lds.NewRecoutClient, app.NewRecout)
+	wire.Build(lds.NewRecoutClient, lds.NewUserClient, app.NewRecout)
 	return
 }
 
