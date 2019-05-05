@@ -11,7 +11,7 @@ deploy:
 
 .PHONY: local
 local:
-	dev_appserver.py app.yaml
+	dev_appserver.py app.yaml --clear_datastore
 
 .PHONY: wire
 wire:
