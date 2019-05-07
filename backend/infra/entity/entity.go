@@ -1,8 +1,9 @@
 package entity
 
 const (
-	RecoutEntityName = "RecoutEntity"
-	UserEntityName   = "UserEntity"
+	RecoutEntityName    = "RecoutEntity"
+	UserEntityName      = "UserEntity"
+	ContinuesEntityName = "ContinuesEntity"
 )
 
 type Recout struct {
@@ -17,4 +18,10 @@ type User struct {
 	Name        string `datastore:"name"`
 	PixelaGraph string `datastore:"pixela_graph"`
 	PixelaToken string `datastore:"pixela_token"`
+}
+
+type Continues struct {
+	AccountID string `datastore:"account_id"`
+	LastDate  string `datastore:"last_date"`
+	Count     int    `datastore:"count"`
 }

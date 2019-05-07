@@ -7,7 +7,6 @@ import (
 	"github.com/gmidorii/recout/backend/infra/entity"
 	"github.com/gmidorii/recout/backend/infra/repository"
 	"github.com/pkg/errors"
-	uuid "github.com/satori/go.uuid"
 	"go.mercari.io/datastore"
 )
 
@@ -99,18 +98,37 @@ func (u *userClient) Get(ctx context.Context, accountID string) (entity.User, er
 	return entities[0], nil
 }
 
-func generateUUID() (string, error) {
-	id, err := uuid.NewV4()
-	if err != nil {
-		return "", errors.Wrap(err, "failed generate uuid")
+type continuesClient struct {
+	gClient datastore.Client
+	env     string
+}
+
+func NewContinuesClient(gClient datastore.Client, env string) repository.Continues {
+	return &continuesClient{
+		gClient: gClient,
+		env:     env,
 	}
-	return id.String(), nil
 }
 
-func generateEntityByEnv(kind, env string) string {
-	return fmt.Sprintf("%v_%v", env, kind)
+func (c *continuesClient) Put(ctx context.Context, e entity.Continues) error {
+	if _, err := c.gClient.Put(ctx, c.gClient.IncompleteKey(generateEntityByEnv(entity.ContinuesEntityName, c.env), nil), e); err != nil {
+		return err
+	}
+	return nil
 }
 
-func generateKey(client datastore.Client, kind, env, uid string) datastore.Key {
-	return client.NameKey(generateEntityByEnv(kind, env), uid, nil)
+func (c *continuesClient) Get(ctx context.Context, accountID string) (entity.Continues, error) {
+	q := c.gClient.NewQuery(generateEntityByEnv(entity.ContinuesEntityName, c.env)).
+		Filter("account_id = ", accountID).
+		Limit(1)
+
+	// user entity is only by account_id.
+	entities := make([]entity.Continues, 0, 1)
+	if _, err := c.gClient.GetAll(ctx, q, &entities); err != nil {
+		return entity.Continues{}, errors.Wrap(err, "failed continues entity get.")
+	}
+	if len(entities) != 1 {
+		return entity.Continues{}, fmt.Errorf("unexpected entities len got=%v, want=%v", len(entities), 1)
+	}
+	return entities[0], nil
 }
