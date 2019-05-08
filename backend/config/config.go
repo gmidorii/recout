@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"go.mercari.io/datastore"
-	"go.mercari.io/datastore/aedatastore"
+	"go.mercari.io/datastore/clouddatastore"
 )
 
 const timeZone = "Asia/Tokyo"
@@ -24,7 +24,7 @@ func New() (Config, error) {
 		return Config{}, fmt.Errorf("failed location setting: %v", err)
 	}
 
-	client, err := aedatastore.FromContext(context.Background())
+	client, err := clouddatastore.FromContext(context.Background())
 	if err != nil {
 		return Config{}, fmt.Errorf("faild create datastore client: %v", err)
 	}
