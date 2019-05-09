@@ -18,3 +18,7 @@ type RecoutFetch struct {
 	Message   string   `json:"message"`
 	CreatedAt JSONTime `json:"created_at"`
 }
+
+type RecoutContinues struct {
+	Count int `json:"count"`
+}

@@ -25,6 +25,18 @@ func FactoryFetchForm(values url.Values) (RecoutFetch, error) {
 	return RecoutFetch{Limit: limit}, nil
 }
 
+type RecoutContinues struct {
+	AccountID string
+}
+
+func FactoryContinues(values url.Values) (RecoutContinues, error) {
+	id := values.Get("account_id")
+	if id == "" {
+		return RecoutContinues{}, errors.New("account_id is necessary parameter")
+	}
+	return RecoutContinues{AccountID: id}, nil
+}
+
 type User struct {
 	AccountID   string `json:"account_id"`
 	PixelaGraph string `json:"pixela_graph"`
