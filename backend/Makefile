@@ -16,3 +16,7 @@ local:
 .PHONY: wire
 wire:
 	$(WIRE_BIN) gen github.com/gmidorii/recout/backend/injector
+
+.PHONY: test
+test:
+	go test -v ./...
