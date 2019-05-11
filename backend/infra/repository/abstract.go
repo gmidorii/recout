@@ -18,6 +18,7 @@ type User interface {
 }
 
 type Continues interface {
+	Put(ctx context.Context, e entity.Continues) error
 	PutKey(ctx context.Context, key string, e entity.Continues) error
 	Get(ctx context.Context, accountID string) (string, entity.Continues, error)
 }

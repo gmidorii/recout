@@ -110,6 +110,14 @@ func NewContinuesClient(gClient datastore.Client, env string) repository.Continu
 	}
 }
 
+func (c *continuesClient) Put(ctx context.Context, e entity.Continues) error {
+	k := c.gClient.IncompleteKey(generateEntityByEnv(entity.ContinuesEntityName, c.env), nil)
+	if _, err := c.gClient.Put(ctx, k, e); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (c *continuesClient) PutKey(ctx context.Context, key string, e entity.Continues) error {
 	k := c.gClient.NameKey(generateEntityByEnv(entity.ContinuesEntityName, c.env), key, nil)
 	if _, err := c.gClient.Put(ctx, k, e); err != nil {

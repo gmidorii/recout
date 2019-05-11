@@ -97,6 +97,14 @@ func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err 
 		switch err.(type) {
 		case repository.NotFoundError:
 			//TODO: put new entity.
+			e := entity.Continues{
+				AccountID: accountID,
+				LastDate:  r.ctn.Now.Format(entity.DateLayout),
+				Count:     1,
+			}
+			if err := r.repoContinues.Put(ctx, e); err != nil {
+				return "", err
+			}
 			return "", nil
 		default:
 			return "", err
