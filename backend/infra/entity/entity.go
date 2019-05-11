@@ -4,6 +4,8 @@ const (
 	RecoutEntityName    = "RecoutEntity"
 	UserEntityName      = "UserEntity"
 	ContinuesEntityName = "ContinuesEntity"
+
+	DateLayout = "20060102"
 )
 
 type Recout struct {
@@ -22,6 +24,7 @@ type User struct {
 
 type Continues struct {
 	AccountID string `datastore:"account_id"`
-	LastDate  string `datastore:"last_date"`
-	Count     int    `datastore:"count"`
+	// layout is 'yyyyMMdd'
+	LastDate string `datastore:"last_date"`
+	Count    int    `datastore:"count"`
 }

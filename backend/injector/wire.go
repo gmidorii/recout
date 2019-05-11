@@ -11,7 +11,7 @@ import (
 )
 
 func InitRecoutApp(gClient datastore.Client, ctn app.Container, env string) (r app.Recout, err error) {
-	wire.Build(lds.NewRecoutClient, lds.NewUserClient, pixela.NewClient, app.NewRecout)
+	wire.Build(lds.NewRecoutClient, lds.NewUserClient, lds.NewContinuesClient, pixela.NewClient, app.NewRecout)
 	return
 }
 

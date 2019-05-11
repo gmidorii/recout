@@ -4,8 +4,3 @@ includes:
 env_variables:
   RO_ENV: prod
 handlers:
-- url: /recout
-  static_dir: static
-  http_headers:
-    Access-Control-Allow-Origin: '*'
-    Access-Control-Allow-Methods: "GET,POST,OPTIONS"

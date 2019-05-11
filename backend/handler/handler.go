@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gmidorii/recout/backend/app"
 	"github.com/gmidorii/recout/backend/config"
@@ -82,6 +83,36 @@ func (rh Recout) Get(w http.ResponseWriter, r *http.Request) {
 	res, err := service.Fetch(appengine.NewContext(r), form)
 	if err != nil {
 		log.Printf("failed service :%v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	render.Status(r, http.StatusOK)
+	render.JSON(w, r, res)
+}
+
+func (rh Recout) GetContinues(w http.ResponseWriter, r *http.Request) {
+	form, err := form.FactoryContinues(r.URL.Query())
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	ctn := app.Container{
+		Env:      rh.Config.Env,
+		Now:      time.Now(),
+		Location: rh.Config.Location,
+	}
+	service, err := injector.InitRecoutApp(rh.Config.Client, ctn, ctn.Env)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	res, err := service.FetchContinues(appengine.NewContext(r), form)
+	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

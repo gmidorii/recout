@@ -20,6 +20,7 @@ func pathRoute(r *chi.Mux, config config.Config) {
 		rh := handler.Recout{Config: config}
 		r.Post("/", rh.Post)
 		r.Get("/", rh.Get)
+		r.Get("/continues", rh.GetContinues)
 	})
 
 	r.Route("/user", func(r chi.Router) {

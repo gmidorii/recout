@@ -15,16 +15,21 @@ import (
 const (
 	pixelaURL         = "https://pixe.la/v1/users"
 	pixelaHeaderToken = "X-USER-TOKEN"
+
+	durationDay = 24 * time.Hour
+	hoursPerDay = 24
 )
 
 type Container struct {
 	Env      string
+	Now      time.Time
 	Location *time.Location
 }
 
-func NewContainer(env string, location time.Location) Container {
+func NewContainer(env string, now time.Time, location time.Location) Container {
 	return Container{
 		Env:      env,
+		Now:      now,
 		Location: &location,
 	}
 }
@@ -32,26 +37,30 @@ func NewContainer(env string, location time.Location) Container {
 type Recout interface {
 	Create(ctx context.Context, form form.Recout) (string, error)
 	Fetch(ctx context.Context, form form.RecoutFetch) ([]response.RecoutFetch, error)
+	FetchContinues(ctx context.Context, form form.RecoutContinues) (response.RecoutContinues, error)
 }
 
 type recout struct {
-	ctn          Container
-	repoRecout   repository.Recout
-	repoUser     repository.User
-	pixelaClient pixela.Client
+	ctn           Container
+	repoRecout    repository.Recout
+	repoUser      repository.User
+	repoContinues repository.Continues
+	pixelaClient  pixela.Client
 }
 
 func NewRecout(
 	ctn Container,
 	repoRecout repository.Recout,
 	repoUser repository.User,
+	repoContinues repository.Continues,
 	pixelaClient pixela.Client,
 ) Recout {
 	return &recout{
-		ctn:          ctn,
-		repoRecout:   repoRecout,
-		repoUser:     repoUser,
-		pixelaClient: pixelaClient,
+		ctn:           ctn,
+		repoRecout:    repoRecout,
+		repoUser:      repoUser,
+		repoContinues: repoContinues,
+		pixelaClient:  pixelaClient,
 	}
 }
 
@@ -95,6 +104,29 @@ func (r *recout) Fetch(ctx context.Context, form form.RecoutFetch) ([]response.R
 		}
 	}
 	return responses, nil
+}
+
+func (r *recout) FetchContinues(ctx context.Context, form form.RecoutContinues) (response.RecoutContinues, error) {
+	e, err := r.repoContinues.Get(ctx, form.AccountID)
+	if err != nil {
+		return response.RecoutContinues{}, errors.Wrap(err, "failed fetch continues entity")
+	}
+	lastDate, err := time.Parse(entity.DateLayout, e.LastDate)
+	if err != nil {
+		return response.RecoutContinues{}, errors.Wrapf(err, "%v is not %v layout.", e.LastDate, entity.DateLayout)
+	}
+	if date := subDate(lastDate, r.ctn.Now); date > 1 {
+		return response.RecoutContinues{Count: 0}, nil
+	}
+
+	return response.RecoutContinues{Count: e.Count}, nil
+}
+
+func subDate(before, after time.Time) int {
+	trBefore := before.Truncate(durationDay)
+	trAfter := after.Truncate(durationDay)
+	hours24Divisible := trAfter.Sub(trBefore).Hours()
+	return int(hours24Divisible) / hoursPerDay
 }
 
 type User interface {
