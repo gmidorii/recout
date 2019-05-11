@@ -110,25 +110,27 @@ func NewContinuesClient(gClient datastore.Client, env string) repository.Continu
 	}
 }
 
-func (c *continuesClient) Put(ctx context.Context, e entity.Continues) error {
-	if _, err := c.gClient.Put(ctx, c.gClient.IncompleteKey(generateEntityByEnv(entity.ContinuesEntityName, c.env), nil), e); err != nil {
+func (c *continuesClient) PutKey(ctx context.Context, key string, e entity.Continues) error {
+	k := c.gClient.NameKey(generateEntityByEnv(entity.ContinuesEntityName, c.env), key, nil)
+	if _, err := c.gClient.Put(ctx, k, e); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *continuesClient) Get(ctx context.Context, accountID string) (entity.Continues, error) {
+func (c *continuesClient) Get(ctx context.Context, accountID string) (string, entity.Continues, error) {
 	q := c.gClient.NewQuery(generateEntityByEnv(entity.ContinuesEntityName, c.env)).
 		Filter("account_id = ", accountID).
 		Limit(1)
 
 	// user entity is only by account_id.
 	entities := make([]entity.Continues, 0, 1)
-	if _, err := c.gClient.GetAll(ctx, q, &entities); err != nil {
-		return entity.Continues{}, errors.Wrap(err, "failed continues entity get.")
+	keys, err := c.gClient.GetAll(ctx, q, &entities)
+	if err != nil {
+		return "", entity.Continues{}, errors.Wrap(err, "failed continues entity get.")
 	}
-	if len(entities) != 1 {
-		return entity.Continues{}, fmt.Errorf("unexpected entities len got=%v, want=%v", len(entities), 1)
+	if len(entities) == 0 {
+		return "", entity.Continues{}, repository.NotFoundError{}
 	}
-	return entities[0], nil
+	return keys[0].Name(), entities[0], nil
 }

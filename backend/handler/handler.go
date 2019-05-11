@@ -41,6 +41,7 @@ func (rh Recout) Post(w http.ResponseWriter, r *http.Request) {
 
 	ctn := app.Container{
 		Env:      rh.Config.Env,
+		Now:      time.Now(),
 		Location: rh.Config.Location,
 	}
 	service, err := injector.InitRecoutApp(rh.Config.Client, ctn, ctn.Env)

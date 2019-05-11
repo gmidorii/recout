@@ -81,13 +81,49 @@ func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err 
 		)
 	}
 
-	entity := entity.Recout{
+	entityRecout := entity.Recout{
 		AccountID: "gmidorii",
 		Message:   form.Message,
 		CreatedAt: time.Now().In(r.ctn.Location).Unix(),
 	}
 
-	return r.repoRecout.Put(ctx, entity)
+	uid, err = r.repoRecout.Put(ctx, entityRecout)
+	if err != nil {
+		return "", err
+	}
+
+	continuesKey, continuesEntity, err := r.repoContinues.Get(ctx, accountID)
+	if err != nil {
+		switch err.(type) {
+		case repository.NotFoundError:
+			//TODO: put new entity.
+			return "", nil
+		default:
+			return "", err
+		}
+	}
+
+	lastDate, err := time.Parse(entity.DateLayout, continuesEntity.LastDate)
+	if err != nil {
+		return "", errors.Wrapf(err, "%v is not %v layout.", continuesEntity.LastDate, entity.DateLayout)
+	}
+	day := subDate(lastDate, r.ctn.Now)
+	switch day {
+	case 0:
+		// do nothing.
+		return uid, nil
+	case 1:
+		continuesEntity.LastDate = r.ctn.Now.Format(entity.DateLayout)
+		continuesEntity.Count += 1
+	default:
+		continuesEntity.LastDate = r.ctn.Now.Format(entity.DateLayout)
+		continuesEntity.Count = 1
+	}
+
+	if err := r.repoContinues.PutKey(ctx, continuesKey, continuesEntity); err != nil {
+		return "", err
+	}
+	return uid, nil
 }
 
 func (r *recout) Fetch(ctx context.Context, form form.RecoutFetch) ([]response.RecoutFetch, error) {
@@ -107,7 +143,7 @@ func (r *recout) Fetch(ctx context.Context, form form.RecoutFetch) ([]response.R
 }
 
 func (r *recout) FetchContinues(ctx context.Context, form form.RecoutContinues) (response.RecoutContinues, error) {
-	e, err := r.repoContinues.Get(ctx, form.AccountID)
+	_, e, err := r.repoContinues.Get(ctx, form.AccountID)
 	if err != nil {
 		return response.RecoutContinues{}, errors.Wrap(err, "failed fetch continues entity")
 	}
