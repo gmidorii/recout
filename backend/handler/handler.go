@@ -53,7 +53,7 @@ func (rh Recout) Post(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 	uid, err := service.Create(ctx, form)
 	if err != nil {
-		log.Println(err)
+		log.Printf("failed recout create service: %+v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

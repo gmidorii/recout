@@ -10,6 +10,7 @@ import (
 	"github.com/gmidorii/recout/backend/infra/repository"
 	"github.com/gmidorii/recout/backend/response"
 	"github.com/pkg/errors"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -89,7 +90,7 @@ func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err 
 
 	uid, err = r.repoRecout.Put(ctx, entityRecout)
 	if err != nil {
-		return "", err
+		return "", xerrors.Errorf("failed put recout: %w", err)
 	}
 
 	continuesKey, continuesEntity, err := r.repoContinues.Get(ctx, accountID)
@@ -103,17 +104,17 @@ func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err 
 				Count:     1,
 			}
 			if err := r.repoContinues.Put(ctx, e); err != nil {
-				return "", err
+				return "", xerrors.Errorf("failed init put continues entity: %w", err)
 			}
 			return "", nil
 		default:
-			return "", err
+			return "", xerrors.Errorf("failed get continues entity: %w", err)
 		}
 	}
 
 	lastDate, err := time.Parse(entity.DateLayout, continuesEntity.LastDate)
 	if err != nil {
-		return "", errors.Wrapf(err, "%v is not %v layout.", continuesEntity.LastDate, entity.DateLayout)
+		return "", xerrors.Errorf("%v is not %v layout: %w", continuesEntity.LastDate, entity.DateLayout, err)
 	}
 	day := subDate(lastDate, r.ctn.Now)
 	switch day {
@@ -129,7 +130,7 @@ func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err 
 	}
 
 	if err := r.repoContinues.PutKey(ctx, continuesKey, continuesEntity); err != nil {
-		return "", err
+		return "", xerrors.Errorf("failed update continues entity: %w", err)
 	}
 	return uid, nil
 }

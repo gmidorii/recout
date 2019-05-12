@@ -16,6 +16,7 @@ require (
 	go.mercari.io/datastore v1.4.0
 	golang.org/x/net v0.0.0-20190420063019-afa5a82059c6 // indirect
 	golang.org/x/oauth2 v0.0.0-20190402181905-9f3314589c9a // indirect
+	golang.org/x/xerrors v0.0.0-20190510150013-5403a72a6aaf
 	google.golang.org/api v0.3.2 // indirect
 	google.golang.org/appengine v1.5.0
 )
