@@ -8,6 +8,7 @@ import (
 	"github.com/gmidorii/recout/backend/infra/repository"
 	"github.com/pkg/errors"
 	"go.mercari.io/datastore"
+	"golang.org/x/xerrors"
 )
 
 type recoutClient struct {
@@ -112,7 +113,7 @@ func NewContinuesClient(gClient datastore.Client, env string) repository.Continu
 
 func (c *continuesClient) Put(ctx context.Context, e entity.Continues) error {
 	k := c.gClient.IncompleteKey(generateEntityByEnv(entity.ContinuesEntityName, c.env), nil)
-	if _, err := c.gClient.Put(ctx, k, e); err != nil {
+	if _, err := c.gClient.Put(ctx, k, &e); err != nil {
 		return err
 	}
 	return nil
@@ -120,7 +121,7 @@ func (c *continuesClient) Put(ctx context.Context, e entity.Continues) error {
 
 func (c *continuesClient) PutKey(ctx context.Context, key string, e entity.Continues) error {
 	k := c.gClient.NameKey(generateEntityByEnv(entity.ContinuesEntityName, c.env), key, nil)
-	if _, err := c.gClient.Put(ctx, k, e); err != nil {
+	if _, err := c.gClient.Put(ctx, k, &e); err != nil {
 		return err
 	}
 	return nil
@@ -135,7 +136,7 @@ func (c *continuesClient) Get(ctx context.Context, accountID string) (string, en
 	entities := make([]entity.Continues, 0, 1)
 	keys, err := c.gClient.GetAll(ctx, q, &entities)
 	if err != nil {
-		return "", entity.Continues{}, errors.Wrap(err, "failed continues entity get.")
+		return "", entity.Continues{}, xerrors.Errorf("failed continues entity get: %v", err)
 	}
 	if len(entities) == 0 {
 		return "", entity.Continues{}, repository.NotFoundError{}
