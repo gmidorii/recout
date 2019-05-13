@@ -85,7 +85,7 @@ func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err 
 	entityRecout := entity.Recout{
 		AccountID: "gmidorii",
 		Message:   form.Message,
-		CreatedAt: time.Now().In(r.ctn.Location).Unix(),
+		CreatedAt: r.ctn.Now.In(r.ctn.Location).Unix(),
 	}
 
 	uid, err = r.repoRecout.Put(ctx, entityRecout)
