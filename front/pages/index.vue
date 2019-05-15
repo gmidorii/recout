@@ -70,6 +70,9 @@ import axios from "axios";
 import { basename } from "path";
 import { Recout } from "../types/index";
 import { parse, format } from "date-fns";
+import { RepositoryFactory } from "../repositories/RepositoryFactory";
+import { recout } from "../repositories/RecoutRepository";
+const RecoutRepository: recout = RepositoryFactory.getRecout();
 
 @Component({
   components: {}
@@ -99,8 +102,8 @@ export default class extends Vue {
 
   private async loadOutput(): Promise<Recout[]> {
     try {
-      const res = await axios.get(`${this.recoutUrl}/recout`);
-      return res.data;
+      const { data } = await RecoutRepository.get();
+      return data;
     } catch (error) {
       console.log(error);
       return [];
@@ -110,9 +113,7 @@ export default class extends Vue {
   public async submit() {
     this.loading = true;
     try {
-      await axios.post(`${this.recoutUrl}/recout`, {
-        message: this.output
-      });
+      await RecoutRepository.post(this.output);
     } catch (error) {
       console.log(error);
       this.failed = true;
