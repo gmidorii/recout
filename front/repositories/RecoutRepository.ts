@@ -10,7 +10,7 @@ const Repository = axios.create({
 export interface recout {
   get(limit?: number);
   post(message: string);
-  getContinues();
+  getContinues(accountId?: string);
 }
 
 const repositoryImpl: recout = {
@@ -28,11 +28,10 @@ const repositoryImpl: recout = {
     });
   },
 
-  getContinues() {
+  getContinues(accountId: string = "gmidorii") {
     return Repository.get(`${resource}/continues`, {
       params: {
-        // TODO: get account_id
-        account_id: "gmidorii"
+        account_id: accountId
       }
     });
   }

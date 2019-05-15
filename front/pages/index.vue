@@ -17,6 +17,10 @@
       <v-content>
         <v-container class="content" fluid>
           <v-layout column justify-center class="part-content">
+            <h3>Continues</h3>
+            <div class="continues">{{recoutContinues}}</div>
+          </v-layout>
+          <v-layout column justify-center class="part-content">
             <h3>Graph</h3>
             <a :href="graphDetailUrl" target="_blank">
               <div class="graph">
@@ -85,7 +89,6 @@ export default class extends Vue {
   }?mode=line`;
   graphDetailUrl: string = `${process.env.pixelaUrl}/${process.env.graph}.html`;
   hint: string = "Write your output (Ctrl + Enter)";
-  recoutUrl: string = `${process.env.recoutUrl}`;
   timeout: number = 3000;
 
   drawer: boolean = false;
@@ -95,9 +98,11 @@ export default class extends Vue {
 
   pastOutputs: Recout[] = [];
   output: string = "";
+  recoutContinues: number = null;
 
   async created() {
     this.pastOutputs = await this.loadOutput();
+    this.recoutContinues = await this.loadContinues();
   }
 
   private async loadOutput(): Promise<Recout[]> {
@@ -107,6 +112,15 @@ export default class extends Vue {
     } catch (error) {
       console.log(error);
       return [];
+    }
+  }
+
+  private async loadContinues(): Promise<number> {
+    try {
+      const { data } = await RecoutRepository.getContinues();
+      return data.count;
+    } catch (error) {
+      return 0;
     }
   }
 
@@ -150,6 +164,10 @@ export default class extends Vue {
 .content {
   margin: 0 auto;
   width: 80%;
+
+  .continues {
+    margin: 0 auto;
+  }
 
   .part-content {
     margin-top: 20px;
