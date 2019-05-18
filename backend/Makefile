@@ -12,7 +12,7 @@ generate:
 
 .PHONY: pack
 pack:
-	brbundle pack $(PACK_FILE) ../front/dist/
+	brbundle pack -f $(PACK_FILE) ../front/dist/
 
 .PHONY: deploy
 deploy: generate pack
