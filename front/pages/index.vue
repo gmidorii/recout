@@ -46,7 +46,12 @@
                 ></v-textarea>
                 <v-btn block color="success" v-on:click="submit" :loading="loading">submit</v-btn>
                 <v-snackbar :value="succeed" color="success" :timeout="timeout" top>Success</v-snackbar>
-                <v-snackbar :value="failed" color="error" :timeout="timeout" top>Error</v-snackbar>
+                <v-snackbar
+                  :value="failed"
+                  color="error"
+                  :timeout="timeout"
+                  top
+                >Error {{ errMessage }}</v-snackbar>
               </v-form>
             </v-card>
           </v-layout>
@@ -99,6 +104,7 @@ export default class extends Vue {
   pastOutputs: Recout[] = [];
   output: string = "";
   recoutContinues: number = null;
+  errMessage: string = "";
 
   async created() {
     this.pastOutputs = await this.loadOutput();
@@ -125,20 +131,18 @@ export default class extends Vue {
     }
   }
 
-  private async loadGraph(): Promise<number> {
+  private async loadGraph() {
     try {
       const { data } = await UserRepository.get();
       this.graphUrl = `${process.env.pixelaUrl}/users/${
         data.account_id
-      }/graphs/${data.pixela_url}`;
-      this.graphLineUrl = `${process.env.pixelaUrl}/users/${
-        data.account_id
-      }/graphs/${data.pixela_url}?mode=line`;
+      }/graphs/${data.pixela_graph}`;
+      this.graphLineUrl = `${this.graphUrl}?mode=line`;
       this.graphDetailUrl = `${this.graphUrl}.html`;
     } catch (error) {
-      return 0;
+      this.errMessage = "failed load graph.";
+      this.failed = true;
     }
-    return 0;
   }
 
   public async submit() {
@@ -147,6 +151,7 @@ export default class extends Vue {
       await RecoutRepository.post(this.output);
     } catch (error) {
       console.log(error);
+      this.errMessage = "faild post recout.";
       this.failed = true;
       this.loading = false;
       return;
