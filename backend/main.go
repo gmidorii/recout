@@ -10,12 +10,14 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
+	"go.pyspa.org/brbundle"
+	"go.pyspa.org/brbundle/brchi"
 	"google.golang.org/appengine"
 )
 
-func pathRoute(r *chi.Mux, config config.Config) {
-	r.Get("/", handler.IndexHandler)
+const frontPackageName = "front.pb"
 
+func pathRoute(r *chi.Mux, config config.Config) {
 	r.Route("/recout", func(r chi.Router) {
 		rh := handler.Recout{Config: config}
 		r.Post("/", rh.Post)
@@ -27,6 +29,12 @@ func pathRoute(r *chi.Mux, config config.Config) {
 		u := handler.User{Config: config}
 		r.Post("/", u.Post)
 	})
+
+	brbundle.RegisterBundle(frontPackageName)
+	r.Get("/*", brchi.Mount())
+	r.Get("/", brchi.Mount(brbundle.WebOption{
+		SPAFallback: "index.html",
+	}))
 }
 
 func main() {
