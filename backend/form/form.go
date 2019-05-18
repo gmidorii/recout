@@ -43,6 +43,14 @@ type User struct {
 	PixelaToken string `json:"pixela_token"`
 }
 
+func FactoryUser(values url.Values) (User, error) {
+	id := values.Get("account_id")
+	if id == "" {
+		return User{}, errors.New("account_id is necessary paramter")
+	}
+	return User{AccountID: id}, nil
+}
+
 func getIntValue(values url.Values, key string, defaultValue int) (int, error) {
 	v := values.Get(key)
 	if v == "" {

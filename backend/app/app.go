@@ -175,6 +175,7 @@ func subDate(before, after time.Time) int {
 }
 
 type User interface {
+	Fetch(ctx context.Context, form form.User) (response.User, error)
 	Save(ctx context.Context, form form.User) error
 }
 
@@ -188,6 +189,17 @@ func NewUser(ctn Container, repoUser repository.User) User {
 		ctn:      ctn,
 		repoUser: repoUser,
 	}
+}
+
+func (u *user) Fetch(ctx context.Context, form form.User) (response.User, error) {
+	userEntity, err := u.repoUser.Get(ctx, form.AccountID)
+	if err != nil {
+		return response.User{}, err
+	}
+	return response.User{
+		AccountID:   userEntity.AccountID,
+		PixelaGraph: userEntity.PixelaGraph,
+	}, nil
 }
 
 func (p *user) Save(ctx context.Context, form form.User) error {

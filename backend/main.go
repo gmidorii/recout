@@ -27,6 +27,7 @@ func pathRoute(r *chi.Mux, config config.Config) {
 
 	r.Route("/user", func(r chi.Router) {
 		u := handler.User{Config: config}
+		r.Get("/", u.Get)
 		r.Post("/", u.Post)
 	})
 

@@ -22,3 +22,8 @@ type RecoutFetch struct {
 type RecoutContinues struct {
 	Count int `json:"count"`
 }
+
+type User struct {
+	AccountID   string `json:"account_id"`
+	PixelaGraph string `json:"pixela_graph"`
+}

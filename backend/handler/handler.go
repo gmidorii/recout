@@ -126,6 +126,34 @@ type User struct {
 	config.Config
 }
 
+func (u User) Get(w http.ResponseWriter, r *http.Request) {
+	user, err := form.FactoryUser(r.URL.Query())
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		log.Println(err)
+		return
+	}
+
+	ctn := app.Container{
+		Env: u.Config.Env,
+	}
+	service, err := injector.InitUserApp(u.Config.Client, ctn, ctn.Env)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+	res, err := service.Fetch(appengine.NewContext(r), user)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+
+	render.Status(r, http.StatusOK)
+	render.JSON(w, r, res)
+}
+
 func (u User) Post(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
