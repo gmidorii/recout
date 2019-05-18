@@ -163,7 +163,7 @@ export default class extends Vue {
 
 .content {
   margin: 0 auto;
-  width: 80%;
+  width: 90%;
 
   .continues {
     margin: 0 auto;
@@ -180,7 +180,7 @@ export default class extends Vue {
 
   .output {
     margin: 0 auto;
-    width: 80%;
+    width: 85%;
   }
 
   .graph div {
