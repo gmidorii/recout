@@ -1,7 +1,6 @@
 export default {
   env: {
-    pixelaUrl: "https://pixe.la/v1/users/gmidorii/graphs",
-    graph: process.env.RECOUT_PIXELA_GRAPH,
+    pixelaUrl: "https://pixe.la/v1",
     recoutUrl: process.env.RECOUT_URL
   },
   head: {

@@ -76,18 +76,15 @@ import { Recout } from "../types/index";
 import { parse, format } from "date-fns";
 import { RepositoryFactory } from "../repositories/RepositoryFactory";
 import { recout } from "../repositories/RecoutRepository";
+import { user } from "~/repositories/UserRepository";
 const RecoutRepository: recout = RepositoryFactory.getRecout();
+const UserRepository: user = RepositoryFactory.getUser();
 
 @Component({
   components: {}
 })
 export default class extends Vue {
   // TODO: fetch graph name and user name from recout api.
-  graphUrl: string = `${process.env.pixelaUrl}/${process.env.graph}`;
-  graphLineUrl: string = `${process.env.pixelaUrl}/${
-    process.env.graph
-  }?mode=line`;
-  graphDetailUrl: string = `${process.env.pixelaUrl}/${process.env.graph}.html`;
   hint: string = "Write your output (Ctrl + Enter)";
   timeout: number = 3000;
 
@@ -96,6 +93,9 @@ export default class extends Vue {
   succeed: boolean = false;
   failed: boolean = false;
 
+  graphUrl: string = "";
+  graphLineUrl: string = "";
+  graphDetailUrl: string = "";
   pastOutputs: Recout[] = [];
   output: string = "";
   recoutContinues: number = null;
@@ -103,6 +103,7 @@ export default class extends Vue {
   async created() {
     this.pastOutputs = await this.loadOutput();
     this.recoutContinues = await this.loadContinues();
+    await this.loadGraph();
   }
 
   private async loadOutput(): Promise<Recout[]> {
@@ -122,6 +123,22 @@ export default class extends Vue {
     } catch (error) {
       return 0;
     }
+  }
+
+  private async loadGraph(): Promise<number> {
+    try {
+      const { data } = await UserRepository.get();
+      this.graphUrl = `${process.env.pixelaUrl}/users/${
+        data.account_id
+      }/graphs/${data.pixela_url}`;
+      this.graphLineUrl = `${process.env.pixelaUrl}/users/${
+        data.account_id
+      }/graphs/${data.pixela_url}?mode=line`;
+      this.graphDetailUrl = `${this.graphUrl}.html`;
+    } catch (error) {
+      return 0;
+    }
+    return 0;
   }
 
   public async submit() {

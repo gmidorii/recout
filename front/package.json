@@ -17,7 +17,7 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "prod-generate": "RECOUT_URL='' RECOUT_PIXELA_GRAPH=recout nuxt generate"
+    "prod-generate": "RECOUT_URL='' nuxt generate"
   },
   "devDependencies": {
     "@nuxt/typescript": "2.6.1",
