@@ -1,16 +1,25 @@
 BIN=recout-backend
 WIRE_BIN=wire
+PACK_FILE=front.pb
 
 .PHONY: build
 build: wire
 	go build -o ./$(BIN)
 
+.PHONY: generate
+generate:
+	npm --prefix ../front/ run prod-generate
+
+.PHONY: pack
+pack:
+	brbundle pack $(PACK_FILE) ../front/dist/
+
 .PHONY: deploy
-deploy:
+deploy: generate pack
 	gcloud app deploy --quiet
 
 .PHONY: local
-local:
+local: pack
 	dev_appserver.py app.yaml --clear_datastore
 
 .PHONY: wire
