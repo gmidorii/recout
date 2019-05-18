@@ -167,6 +167,7 @@ export default class extends Vue {
 
   .continues {
     margin: 0 auto;
+    font-size: 3em;
   }
 
   .part-content {
