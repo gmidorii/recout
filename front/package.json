@@ -13,11 +13,10 @@
     "vuex-class": "0.3.2"
   },
   "scripts": {
-    "dev": "nuxt",
+    "dev": "RECOUT_URL='http://localhost:8080' nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
-    "generate": "nuxt generate",
-    "prod-generate": "RECOUT_URL='' nuxt generate"
+    "generate": "RECOUT_URL='' nuxt generate"
   },
   "devDependencies": {
     "@nuxt/typescript": "2.6.1",
