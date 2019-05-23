@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/gmidorii/recout.svg?branch=master)](https://travis-ci.org/gmidorii/recout)
-
 # Recout
+
+[![Build Status](https://dev.azure.com/gmidorii/recout/_apis/build/status/gmidorii.recout?branchName=master)](https://dev.azure.com/gmidorii/recout/_build/latest?definitionId=1&branchName=master)
 
 ## Overview
 
