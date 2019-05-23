@@ -21,7 +21,7 @@ jobs:
 
   - script: |
       cd ./front
-      npm run generate
+      npx nuxt generate
     displayName: 'generate prod code'
 
 - job: backend
@@ -29,11 +29,13 @@ jobs:
     vmImage: 'ubuntu-latest'
   
   steps:
-  - script: cd ./backend
-    displayName: 'change directory'
 
-  - script:  go build
+  - script: |
+      cd ./backend
+      go build
     displayName: 'go build'
   
-  - script: make test
+  - script: |
+      cd ./backend
+      make test
     displayName: 'go test'
