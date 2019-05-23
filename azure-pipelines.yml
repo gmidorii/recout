@@ -19,7 +19,9 @@ jobs:
       npm run build
     displayName: 'npm install and build'
 
-  - script: npm run generate
+  - script: |
+      cd ./front
+      npm run generate
     displayName: 'generate prod code'
 
 - job: backend
@@ -27,8 +29,10 @@ jobs:
     vmImage: 'ubuntu-latest'
   
   steps:
-  - script: |
-      go build
+  - script: cd ./backend
+    displayName: 'change directory'
+
+  - script:  go build
     displayName: 'go build'
   
   - script: make test
