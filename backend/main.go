@@ -41,6 +41,7 @@ func pathRoute(r *chi.Mux, config config.Config) {
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Use(middleware.Heartbeat("/ping"))
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	c := cors.New(cors.Options{
