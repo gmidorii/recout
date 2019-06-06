@@ -77,7 +77,6 @@ export default class extends Vue {
   hint: string = "Write your output (Ctrl + Enter)";
   timeout: number = 3000;
 
-  drawer: boolean = false;
   loading: boolean = false;
   succeed: boolean = false;
   failed: boolean = false;
