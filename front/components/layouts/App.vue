@@ -3,7 +3,7 @@
     <v-app dark>
       <v-navigation-drawer v-model="drawer" cliped fixed app>
         <v-list>
-          <v-list-tile>
+          <v-list-tile to="/">
             <v-list-tile-title>Recout</v-list-tile-title>
           </v-list-tile>
         </v-list>
@@ -16,7 +16,9 @@
       </v-navigation-drawer>
       <v-toolbar app fixed cliped-left>
         <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-        <v-toolbar-title>Recout</v-toolbar-title>
+        <v-toolbar-title>
+          <router-link to="/" class="toolbar-title">Recout</router-link>
+        </v-toolbar-title>
       </v-toolbar>
       <v-content>
         <v-container class="content" fluid>
@@ -38,6 +40,7 @@ export interface DrawerContent {
 
 @Component({})
 export default class extends Vue {
+  home: string = "/";
   drawer: boolean = false;
   drawerContents: DrawerContent[] = [
     { to: "login", name: "Login" },
@@ -50,5 +53,9 @@ export default class extends Vue {
 .content {
   margin: 0 auto;
   width: 90%;
+}
+.toolbar-title {
+  color: inherit;
+  text-decoration: inherit;
 }
 </style>

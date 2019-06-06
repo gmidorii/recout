@@ -8,20 +8,23 @@
 import Vue from "vue";
 import { Component } from "nuxt-property-decorator";
 import firebase from "firebase";
+import auth from "firebase/auth";
 
 @Component({})
 export default class extends Vue {
   mounted() {
-    const firebaseConfig = {
-      apiKey: "AIzaSyAHDcSOiHp6oQ_NVy3WXSwWX3dix3oWLTQ",
-      authDomain: "gmidorii-webapp.firebaseapp.com",
-      databaseURL: "https://gmidorii-webapp.firebaseio.com",
-      projectId: "gmidorii-webapp",
-      storageBucket: "gmidorii-webapp.appspot.com",
-      messagingSenderId: "773134415366",
-      appId: "1:773134415366:web:5b0d2bb88d972113"
-    };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) {
+      const firebaseConfig = {
+        apiKey: "AIzaSyAHDcSOiHp6oQ_NVy3WXSwWX3dix3oWLTQ",
+        authDomain: "gmidorii-webapp.firebaseapp.com",
+        databaseURL: "https://gmidorii-webapp.firebaseio.com",
+        projectId: "gmidorii-webapp",
+        storageBucket: "gmidorii-webapp.appspot.com",
+        messagingSenderId: "773134415366",
+        appId: "1:773134415366:web:5b0d2bb88d972113"
+      };
+      firebase.initializeApp(firebaseConfig);
+    }
 
     if (process.client) {
       const firebaseui = require("firebaseui");
@@ -32,7 +35,9 @@ export default class extends Vue {
           firebase.auth.GoogleAuthProvider.PROVIDER_ID
         ]
       };
-      const ui = new firebaseui.auth.AuthUI(firebase.auth());
+      const ui =
+        firebaseui.auth.AuthUI.getInstance() ||
+        new firebaseui.auth.AuthUI(firebase.auth());
       ui.start("#firebaseui-auth-container", config);
     }
   }
