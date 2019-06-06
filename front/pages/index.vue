@@ -6,6 +6,8 @@
         <h2>{{ title }}</h2>
         <div>{{ subTitle }}</div>
       </v-layout>
+
+      <Login></Login>
     </App>
   </section>
 </template>
@@ -15,16 +17,21 @@ import Vue from "vue";
 import { Component } from "nuxt-property-decorator";
 import Header from "~/components/layouts/Header.vue";
 import App from "~/components/layouts/App.vue";
+import Login from "~/components/ui/Login.vue";
+import firebase from "firebase";
 
 @Component({
   components: {
     Header,
-    App
+    App,
+    Login
   }
 })
 export default class extends Vue {
   title = "Record + Output = Recout";
   subTitle = "This is a personal output visualization tool.";
+
+  mounted() {}
 }
 </script>
 
