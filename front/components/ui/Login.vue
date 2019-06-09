@@ -28,6 +28,7 @@ export default class extends Vue {
 
     if (process.client) {
       const firebaseui = require("firebaseui");
+      require("firebaseui-ja/dist/firebaseui.css");
       const config = {
         signInSuccessUrl: "/recout",
         signInOptions: [
