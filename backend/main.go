@@ -18,17 +18,19 @@ import (
 const frontPackageName = "front.pb"
 
 func pathRoute(r *chi.Mux, config config.Config) {
-	r.Route("/recout", func(r chi.Router) {
-		rh := handler.Recout{Config: config}
-		r.Post("/", rh.Post)
-		r.Get("/", rh.Get)
-		r.Get("/continues", rh.GetContinues)
-	})
+	r.Route("/v1", func(r chi.Router) {
+		r.Route("/recout", func(r chi.Router) {
+			rh := handler.Recout{Config: config}
+			r.Post("/", rh.Post)
+			r.Get("/", rh.Get)
+			r.Get("/continues", rh.GetContinues)
+		})
 
-	r.Route("/user", func(r chi.Router) {
-		u := handler.User{Config: config}
-		r.Get("/", u.Get)
-		r.Post("/", u.Post)
+		r.Route("/user", func(r chi.Router) {
+			u := handler.User{Config: config}
+			r.Get("/", u.Get)
+			r.Post("/", u.Post)
+		})
 	})
 
 	brbundle.RegisterBundle(frontPackageName)
