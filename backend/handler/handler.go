@@ -10,8 +10,10 @@ import (
 	"github.com/gmidorii/recout/backend/app"
 	"github.com/gmidorii/recout/backend/config"
 	"github.com/gmidorii/recout/backend/form"
+	"github.com/gmidorii/recout/backend/infra/repository"
 	"github.com/gmidorii/recout/backend/injector"
 	"github.com/go-chi/render"
+	"golang.org/x/xerrors"
 	"google.golang.org/appengine"
 )
 
@@ -145,6 +147,11 @@ func (u User) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	res, err := service.Fetch(appengine.NewContext(r), user)
 	if err != nil {
+		if xerrors.Is(err, repository.NotFoundError{}) {
+			w.WriteHeader(http.StatusNotFound)
+			log.Println(err)
+			return
+		}
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Println(err)
 		return

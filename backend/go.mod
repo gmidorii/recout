@@ -18,7 +18,7 @@ require (
 	go.pyspa.org/brbundle v0.0.0-20190515144059-7bf0f84fccc8
 	golang.org/x/net v0.0.0-20190420063019-afa5a82059c6 // indirect
 	golang.org/x/oauth2 v0.0.0-20190402181905-9f3314589c9a // indirect
-	golang.org/x/xerrors v0.0.0-20190510150013-5403a72a6aaf
+	golang.org/x/xerrors v0.0.0-20190513163551-3ee3066db522
 	google.golang.org/api v0.3.2 // indirect
 	google.golang.org/appengine v1.5.0
 )

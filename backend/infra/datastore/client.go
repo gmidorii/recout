@@ -2,7 +2,6 @@ package datastore
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/gmidorii/recout/backend/infra/entity"
 	"github.com/gmidorii/recout/backend/infra/repository"
@@ -94,7 +93,7 @@ func (u *userClient) Get(ctx context.Context, accountID string) (entity.User, er
 		return entity.User{}, errors.Wrap(err, "failed user get.")
 	}
 	if len(entities) != 1 {
-		return entity.User{}, fmt.Errorf("unexpected entities len got=%v, want=%v", len(entities), 1)
+		return entity.User{}, xerrors.Errorf("failed fetching entity id=%v: %w", accountID, repository.NotFoundError{})
 	}
 	return entities[0], nil
 }
