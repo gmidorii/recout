@@ -3,6 +3,7 @@ export default {
     pixelaUrl: "https://pixe.la/v1",
     recoutUrl: process.env.RECOUT_URL
   },
+  mode: "spa",
   head: {
     title: "recout",
     meta: [
@@ -17,8 +18,12 @@ export default {
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
   },
   loading: { color: "#3B8070" },
-  css: ["~/assets/css/main.css"],
+  css: ["~/assets/css/main.css", "firebaseui-ja/dist/firebaseui.css"],
   build: {},
   modules: ["@nuxtjs/axios", "@nuxtjs/vuetify"],
-  axios: {}
+  axios: {},
+  router: {
+    middleware: ["auth"]
+  },
+  plugins: ["~/plugins/firebase.ts"]
 };

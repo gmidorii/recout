@@ -70,8 +70,7 @@ const UserRepository: user = RepositoryFactory.getUser();
   components: {
     Header,
     App
-  },
-  middleware: ["auth"]
+  }
 })
 export default class extends Vue {
   // TODO: fetch graph name and user name from recout api.

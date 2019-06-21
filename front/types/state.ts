@@ -4,5 +4,5 @@ export interface RootState {
 
 export interface User {
   name: string;
-  session: string;
+  session?: string;
 }
