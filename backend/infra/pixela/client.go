@@ -16,9 +16,14 @@ const (
 	pixelaHeaderToken = "X-USER-TOKEN"
 )
 
+var (
+	validate = validator.New()
+)
+
 type Client interface {
 	Increment(userID, token, graph string) error
 	CreateUser(user User) error
+	CreateGraph(id, graph, name, token string) error
 }
 
 type client struct {
@@ -44,36 +49,16 @@ func (c *client) Increment(userID, token, graph string) error {
 	return nil
 }
 
-type User struct {
-	Token               string   `validate:"required,get=8,lte=24"`
-	UserName            string   `validate:"required,get=1,lte=32"`
-	AgreeTermsOfService Question `validate:"required"`
-	NotMinor            Question `validate:"required"`
-}
-
-type UserResponse struct {
-	Message   string `json:"message"`
-	IsSuccess bool   `json:"isSuccess"`
-}
-
-type Question string
-
-const (
-	Yes Question = "yes"
-	No  Question = "no"
-)
-
 func (c *client) CreateUser(user User) error {
-	validate := validator.New()
-	if err := validate.Struct(user); err != nil {
+	if err := validate.Struct(&user); err != nil {
 		return err
 	}
-	d, err := json.Marshal(&user)
+	d, err := json.Marshal(user)
 	if err != nil {
 		return err
 	}
 
-	req := http.NewRequest("POST", pixelaURL, bytes.NewReader(d))
+	req, err := http.NewRequest("POST", pixelaURL, bytes.NewReader(d))
 	if err != nil {
 		return errors.Wrap(err, "failed new http request")
 	}
@@ -87,8 +72,8 @@ func (c *client) CreateUser(user User) error {
 		return fmt.Errorf("status code = %v", resp.StatusCode)
 	}
 
-	var decoder json.Decoder
-	var resUser UserResponse
+	decoder := json.NewDecoder(resp.Body)
+	var resUser PostResponse
 	if err := decoder.Decode(&resUser); err != nil {
 		return err
 	}
@@ -96,5 +81,48 @@ func (c *client) CreateUser(user User) error {
 		return errors.New("failed create user")
 	}
 
+	return nil
+}
+
+func (c *client) CreateGraph(id, graph, name, token string) error {
+	g := Graph{
+		ID:   id,
+		Name: name,
+		// fixed value
+		Unit:           "commit",
+		Type:           "int",
+		Color:          "shibafu",
+		Timezone:       "Asia/Tokyo",
+		SelfSufficient: "increment",
+	}
+	if err := validate.Struct(&g); err != nil {
+		return err
+	}
+	d, err := json.Marshal(g)
+	if err != nil {
+		return err
+	}
+
+	url := fmt.Sprintf("%v/%v/graphs", pixelaURL, name)
+	log.Println(url)
+	req, err := http.NewRequest("POST", url, bytes.NewReader(d))
+	if err != nil {
+		return errors.Wrap(err, "failed new http request")
+	}
+	req.Header.Add(pixelaHeaderToken, token)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+	var postRes PostResponse
+	if err := decoder.Decode(&postRes); err != nil {
+		return err
+	}
+	if !postRes.IsSuccess {
+		return errors.New("failed create graph")
+	}
 	return nil
 }
