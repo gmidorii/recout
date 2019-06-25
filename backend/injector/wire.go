@@ -16,6 +16,6 @@ func InitRecoutApp(gClient datastore.Client, ctn app.Container, env string) (r a
 }
 
 func InitUserApp(gClient datastore.Client, ctn app.Container, env string) (r app.User, err error) {
-	wire.Build(lds.NewUserClient, app.NewUser)
+	wire.Build(lds.NewUserClient, app.NewUser, pixela.NewClient)
 	return
 }

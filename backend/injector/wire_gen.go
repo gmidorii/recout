@@ -34,6 +34,7 @@ func InitUserApp(gClient datastore.Client, ctn app.Container, env string) (app.U
 	if err != nil {
 		return nil, err
 	}
-	appUser := app.NewUser(ctn, user)
+	client := pixela.NewClient()
+	appUser := app.NewUser(ctn, user, client)
 	return appUser, nil
 }

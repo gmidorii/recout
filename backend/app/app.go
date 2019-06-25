@@ -2,6 +2,8 @@ package app
 
 import (
 	"context"
+	"log"
+	"strings"
 	"time"
 
 	"github.com/gmidorii/recout/backend/form"
@@ -10,6 +12,7 @@ import (
 	"github.com/gmidorii/recout/backend/infra/repository"
 	"github.com/gmidorii/recout/backend/response"
 	"github.com/pkg/errors"
+	"github.com/rs/xid"
 	"golang.org/x/xerrors"
 )
 
@@ -19,6 +22,7 @@ const (
 
 	durationDay = 24 * time.Hour
 	hoursPerDay = 24
+	idLen       = 16
 )
 
 type Container struct {
@@ -180,14 +184,16 @@ type User interface {
 }
 
 type user struct {
-	ctn      Container
-	repoUser repository.User
+	ctn          Container
+	repoUser     repository.User
+	pixelaClient pixela.Client
 }
 
-func NewUser(ctn Container, repoUser repository.User) User {
+func NewUser(ctn Container, repoUser repository.User, client pixela.Client) User {
 	return &user{
-		ctn:      ctn,
-		repoUser: repoUser,
+		ctn:          ctn,
+		repoUser:     repoUser,
+		pixelaClient: client,
 	}
 }
 
@@ -196,6 +202,7 @@ func (u *user) Fetch(ctx context.Context, form form.User) (response.User, error)
 	if err != nil {
 		return response.User{}, err
 	}
+	log.Println(userEntity)
 	return response.User{
 		AccountID:   userEntity.AccountID,
 		PixelaGraph: userEntity.PixelaGraph,
@@ -203,13 +210,37 @@ func (u *user) Fetch(ctx context.Context, form form.User) (response.User, error)
 }
 
 func (p *user) Save(ctx context.Context, form form.User) error {
+	guid := xid.New()
+	token := guid.String()
+	pixelaEntity := pixela.User{
+		Token:               token,
+		UserName:            strings.ToLower(form.AccountID),
+		AgreeTermsOfService: pixela.Yes,
+		NotMinor:            pixela.Yes,
+	}
+	if err := p.pixelaClient.CreateUser(pixelaEntity); err != nil {
+		return err
+	}
+
+	guid = xid.New()
+	id := guid.String()[:idLen]
+	graph := generateGraphName(form.AccountID)
+	if err := p.pixelaClient.CreateGraph(id, graph, pixelaEntity.UserName, token); err != nil {
+		return err
+	}
+
 	entity := entity.User{
 		AccountID:   form.AccountID,
-		PixelaGraph: form.PixelaGraph,
-		PixelaToken: form.PixelaToken,
+		PixelaGraph: graph,
+		PixelaToken: token,
 	}
+
 	if _, err := p.repoUser.Put(ctx, entity); err != nil {
 		return errors.Wrap(err, "failed create user")
 	}
 	return nil
+}
+
+func generateGraphName(origin string) string {
+	return strings.ReplaceAll(strings.ToLower(origin), " ", "")
 }
