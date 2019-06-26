@@ -50,18 +50,18 @@ func (mr *MockRecoutMockRecorder) Put(ctx, e interface{}) *gomock.Call {
 }
 
 // Fetch mocks base method
-func (m *MockRecout) Fetch(ctx context.Context, offset, limit int) ([]entity.Recout, error) {
+func (m *MockRecout) Fetch(ctx context.Context, accountID string, offset, limit int) ([]entity.Recout, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Fetch", ctx, offset, limit)
+	ret := m.ctrl.Call(m, "Fetch", ctx, accountID, offset, limit)
 	ret0, _ := ret[0].([]entity.Recout)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Fetch indicates an expected call of Fetch
-func (mr *MockRecoutMockRecorder) Fetch(ctx, offset, limit interface{}) *gomock.Call {
+func (mr *MockRecoutMockRecorder) Fetch(ctx, accountID, offset, limit interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Fetch", reflect.TypeOf((*MockRecout)(nil).Fetch), ctx, offset, limit)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Fetch", reflect.TypeOf((*MockRecout)(nil).Fetch), ctx, accountID, offset, limit)
 }
 
 // MockUser is a mock of User interface

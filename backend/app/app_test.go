@@ -100,7 +100,7 @@ func Test_recout_Create(t *testing.T) {
 					m := mock.NewMockRecout(ctrl)
 					m.EXPECT().
 						Put(gomock.Any(), entity.Recout{
-							AccountID: "gmidorii",
+							AccountID: "recgmidorii",
 							Message:   "Hi!!",
 							CreatedAt: now.In(time.UTC).Unix(),
 						}).
@@ -110,9 +110,9 @@ func Test_recout_Create(t *testing.T) {
 				repoUser: func() repository.User {
 					m := mock.NewMockUser(ctrl)
 					m.EXPECT().
-						Get(gomock.Any(), "gmidorii").
+						Get(gomock.Any(), "recgmidorii").
 						Return(entity.User{
-							AccountID:   "gmidorii",
+							AccountID:   "recgmidorii",
 							AccessToken: "xxxxxxxx",
 							Name:        "midori",
 							PixelaGraph: "dev-recout",
@@ -123,15 +123,15 @@ func Test_recout_Create(t *testing.T) {
 				repoContinues: func() repository.Continues {
 					m := mock.NewMockContinues(ctrl)
 					m.EXPECT().
-						Get(gomock.Any(), "gmidorii").
+						Get(gomock.Any(), "recgmidorii").
 						Return("mock_key", entity.Continues{
-							AccountID: "gmidorii",
+							AccountID: "recgmidorii",
 							LastDate:  "20190430",
 							Count:     4,
 						}, nil)
 					m.EXPECT().
 						PutKey(gomock.Any(), "mock_key", entity.Continues{
-							AccountID: "gmidorii",
+							AccountID: "recgmidorii",
 							LastDate:  "20190501",
 							Count:     5,
 						}).
@@ -141,14 +141,15 @@ func Test_recout_Create(t *testing.T) {
 				pixelaClient: func() pixela.Client {
 					m := mock.NewMockClient(ctrl)
 					m.EXPECT().
-						Increment("gmidorii", "pixela_token", "dev-recout").
+						Increment("recgmidorii", "pixela_token", "dev-recout").
 						Return(nil)
 					return m
 				}(),
 			},
 			args: args{
 				form: form.Recout{
-					Message: "Hi!!",
+					AccountID: "gmidorii",
+					Message:   "Hi!!",
 				},
 			},
 			wantUid: "mock_uid",

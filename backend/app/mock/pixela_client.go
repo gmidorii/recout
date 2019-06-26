@@ -5,6 +5,7 @@
 package mock
 
 import (
+	pixela "github.com/gmidorii/recout/backend/infra/pixela"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )
@@ -44,4 +45,32 @@ func (m *MockClient) Increment(userID, token, graph string) error {
 func (mr *MockClientMockRecorder) Increment(userID, token, graph interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Increment", reflect.TypeOf((*MockClient)(nil).Increment), userID, token, graph)
+}
+
+// CreateUser mocks base method
+func (m *MockClient) CreateUser(user pixela.User) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateUser", user)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateUser indicates an expected call of CreateUser
+func (mr *MockClientMockRecorder) CreateUser(user interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockClient)(nil).CreateUser), user)
+}
+
+// CreateGraph mocks base method
+func (m *MockClient) CreateGraph(id, graph, name, token string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateGraph", id, graph, name, token)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateGraph indicates an expected call of CreateGraph
+func (mr *MockClientMockRecorder) CreateGraph(id, graph, name, token interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateGraph", reflect.TypeOf((*MockClient)(nil).CreateGraph), id, graph, name, token)
 }
