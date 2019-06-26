@@ -9,6 +9,9 @@ import (
 const (
 	pixelaURL         = "https://pixe.la/v1/users"
 	pixelaHeaderToken = "X-USER-TOKEN"
+	pixelaTokenLen    = 32
+	pixelaUserIDLen   = 16
+	pixelaGraphIDLen  = 8
 
 	durationDay = 24 * time.Hour
 	hoursPerDay = 24
