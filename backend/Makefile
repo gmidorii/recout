@@ -23,7 +23,7 @@ local: pack
 	dev_appserver.py app.yaml
 
 .PHONY: clear-local
-local: pack
+clear-local: pack
 	dev_appserver.py app.yaml --clear_datastore
 
 .PHONY: wire
