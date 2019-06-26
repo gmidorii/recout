@@ -32,7 +32,7 @@ func NewContainer(env string, now time.Time, location time.Location, generator R
 }
 
 type RandomGenerator interface {
-	Do() string
+	Do(length int) string
 }
 
 func subDate(before, after time.Time) int {

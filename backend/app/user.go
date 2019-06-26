@@ -9,7 +9,6 @@ import (
 	"github.com/gmidorii/recout/backend/infra/pixela"
 	"github.com/gmidorii/recout/backend/infra/repository"
 	"github.com/gmidorii/recout/backend/response"
-	"github.com/rs/xid"
 	"golang.org/x/xerrors"
 )
 
@@ -55,8 +54,7 @@ func (u *user) Fetch(ctx context.Context, form form.User) (response.User, error)
 }
 
 func (p *user) Save(ctx context.Context, form form.User) error {
-	guid := xid.New()
-	token := guid.String()
+	token := p.ctn.Generator.Do(20)
 	accountID := toAccountID(form.AccountID)
 
 	pixelaEntity := pixela.User{
@@ -69,8 +67,7 @@ func (p *user) Save(ctx context.Context, form form.User) error {
 		return xerrors.Errorf("failed create pixela user:%v", err)
 	}
 
-	guid = xid.New()
-	graphID := guid.String()[:idLen]
+	graphID := p.ctn.Generator.Do(10)
 	graphName := generateGraphName(accountID)
 	if err := p.pixelaClient.CreateGraph(graphID, graphName, accountID, token); err != nil {
 		return xerrors.Errorf("failed create pixela graph:%v", err)

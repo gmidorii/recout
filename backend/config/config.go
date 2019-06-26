@@ -23,9 +23,18 @@ type Config struct {
 
 type randomXid struct{}
 
-func (x *randomXid) Do() string {
-	guid := xid.New()
-	return guid.String()
+func (x *randomXid) Do(length int) string {
+	if length < 0 {
+		return ""
+	}
+	var result string
+	for {
+		if len(result) > length {
+			return result[:length]
+		}
+		guid := xid.New()
+		result = result + guid.String()
+	}
 }
 
 func New() (Config, error) {
