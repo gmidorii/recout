@@ -16,17 +16,23 @@ const (
 )
 
 type Container struct {
-	Env      string
-	Now      time.Time
-	Location *time.Location
+	Env       string
+	Now       time.Time
+	Location  *time.Location
+	Generator RandomGenerator
 }
 
-func NewContainer(env string, now time.Time, location time.Location) Container {
+func NewContainer(env string, now time.Time, location time.Location, generator RandomGenerator) Container {
 	return Container{
-		Env:      env,
-		Now:      now,
-		Location: &location,
+		Env:       env,
+		Now:       now,
+		Location:  &location,
+		Generator: generator,
 	}
+}
+
+type RandomGenerator interface {
+	Do() string
 }
 
 func subDate(before, after time.Time) int {
