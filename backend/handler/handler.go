@@ -3,6 +3,10 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"time"
+
+	"github.com/gmidorii/recout/backend/app"
+	"github.com/gmidorii/recout/backend/config"
 )
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
@@ -12,4 +16,13 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprint(w, "Hello World!!")
+}
+
+func configToContainer(config config.Config) app.Container {
+	return app.Container{
+		Env:       config.Env,
+		Now:       time.Now(),
+		Location:  config.Location,
+		Generator: config.Generator,
+	}
 }

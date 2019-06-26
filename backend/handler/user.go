@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gmidorii/recout/backend/app"
 	"github.com/gmidorii/recout/backend/config"
 	"github.com/gmidorii/recout/backend/form"
 	"github.com/gmidorii/recout/backend/infra/repository"
@@ -27,9 +26,7 @@ func (u User) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctn := app.Container{
-		Env: u.Config.Env,
-	}
+	ctn := configToContainer(u.Config)
 	service, err := injector.InitUserApp(u.Config.Client, ctn, ctn.Env)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -62,10 +59,7 @@ func (u User) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctn := app.Container{
-		Env:      u.Config.Env,
-		Location: u.Config.Location,
-	}
+	ctn := configToContainer(u.Config)
 	service, err := injector.InitUserApp(u.Config.Client, ctn, ctn.Env)
 	if err != nil {
 		log.Println(err)

@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
-	"github.com/gmidorii/recout/backend/app"
 	"github.com/gmidorii/recout/backend/config"
 	"github.com/gmidorii/recout/backend/form"
 	"github.com/gmidorii/recout/backend/injector"
@@ -30,11 +28,7 @@ func (rh Recout) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctn := app.Container{
-		Env:      rh.Config.Env,
-		Now:      time.Now(),
-		Location: rh.Config.Location,
-	}
+	ctn := configToContainer(rh.Config)
 	service, err := injector.InitRecoutApp(rh.Config.Client, ctn, ctn.Env)
 	if err != nil {
 		log.Println(err)
@@ -62,10 +56,7 @@ func (rh Recout) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctn := app.Container{
-		Env:      rh.Config.Env,
-		Location: rh.Config.Location,
-	}
+	ctn := configToContainer(rh.Config)
 	service, err := injector.InitRecoutApp(rh.Config.Client, ctn, ctn.Env)
 	if err != nil {
 		log.Println(err)
@@ -91,11 +82,7 @@ func (rh Recout) GetContinues(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctn := app.Container{
-		Env:      rh.Config.Env,
-		Now:      time.Now(),
-		Location: rh.Config.Location,
-	}
+	ctn := configToContainer(rh.Config)
 	service, err := injector.InitRecoutApp(rh.Config.Client, ctn, ctn.Env)
 	if err != nil {
 		log.Println(err)
