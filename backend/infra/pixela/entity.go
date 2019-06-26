@@ -8,7 +8,7 @@ const (
 )
 
 type User struct {
-	Token               string   `validate:"required,gte=8,lte=24" json:"token"`
+	Token               string   `validate:"required,gte=8,lte=32" json:"token"`
 	UserName            string   `validate:"required,gte=1,lte=32" json:"username"`
 	AgreeTermsOfService Question `validate:"required" json:"agreeTermsOfService"`
 	NotMinor            Question `validate:"required" json:"notMinor"`
@@ -20,7 +20,7 @@ type PostResponse struct {
 }
 
 type Graph struct {
-	ID             string `json:"id" validate:"required,gte=1,lte=16"`
+	ID             string `json:"id" validate:"required,gte=1,lte=8"`
 	Name           string `json:"name" validate:"required"`
 	Unit           string `json:"unit" validate:"required"`
 	Type           string `json:"type" validate:"required"`
