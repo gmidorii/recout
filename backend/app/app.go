@@ -72,7 +72,8 @@ func NewRecout(
 
 func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err error) {
 	//TODO: fix to user login account id
-	const accountID = "gmidorii"
+	//const accountID = "gmidorii"
+	accountID := toAccountID(form.AccountID)
 
 	userEntity, err := r.repoUser.Get(ctx, accountID)
 	if err != nil {
@@ -88,7 +89,7 @@ func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err 
 	}
 
 	entityRecout := entity.Recout{
-		AccountID: "gmidorii",
+		AccountID: accountID,
 		Message:   form.Message,
 		CreatedAt: r.ctn.Now.In(r.ctn.Location).Unix(),
 	}
@@ -141,7 +142,7 @@ func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err 
 }
 
 func (r *recout) Fetch(ctx context.Context, form form.RecoutFetch) ([]response.RecoutFetch, error) {
-	entities, err := r.repoRecout.Fetch(ctx, 0, form.Limit)
+	entities, err := r.repoRecout.Fetch(ctx, toAccountID(form.AccountID), 0, form.Limit)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed fetch recout entity from datastore")
 	}
@@ -157,7 +158,7 @@ func (r *recout) Fetch(ctx context.Context, form form.RecoutFetch) ([]response.R
 }
 
 func (r *recout) FetchContinues(ctx context.Context, form form.RecoutContinues) (response.RecoutContinues, error) {
-	_, e, err := r.repoContinues.Get(ctx, form.AccountID)
+	_, e, err := r.repoContinues.Get(ctx, toAccountID(form.AccountID))
 	if err != nil {
 		return response.RecoutContinues{}, errors.Wrap(err, "failed fetch continues entity")
 	}
@@ -206,7 +207,7 @@ func (u *user) Fetch(ctx context.Context, form form.User) (response.User, error)
 	//}
 	//log.Printf("all user: %v\n", us)
 
-	accountID := fmt.Sprintf("rec%v", strings.ToLower(form.AccountID))
+	accountID := toAccountID(form.AccountID)
 
 	userEntity, err := u.repoUser.Get(ctx, accountID)
 	if err != nil {
@@ -223,7 +224,7 @@ func (u *user) Fetch(ctx context.Context, form form.User) (response.User, error)
 func (p *user) Save(ctx context.Context, form form.User) error {
 	guid := xid.New()
 	token := guid.String()
-	accountID := fmt.Sprintf("rec%v", strings.ToLower(form.AccountID))
+	accountID := toAccountID(form.AccountID)
 
 	pixelaEntity := pixela.User{
 		Token:               token,
@@ -256,4 +257,8 @@ func (p *user) Save(ctx context.Context, form form.User) error {
 
 func generateGraphName(origin string) string {
 	return strings.ReplaceAll(strings.ToLower(origin), " ", "")
+}
+
+func toAccountID(origin string) string {
+	return fmt.Sprintf("rec%v", strings.ToLower(origin))
 }

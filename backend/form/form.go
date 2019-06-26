@@ -5,24 +5,31 @@ import (
 	"strconv"
 
 	"github.com/pkg/errors"
+	"golang.org/x/xerrors"
 )
 
 const defaultLimit = 10
 
 type Recout struct {
-	Message string `json:message`
+	AccountID string `json:"account_id"`
+	Message   string `json:"message"`
 }
 
 type RecoutFetch struct {
-	Limit int
+	AccountID string
+	Limit     int
 }
 
 func FactoryFetchForm(values url.Values) (RecoutFetch, error) {
+	accountID := values.Get("account_id")
+	if accountID == "" {
+		return RecoutFetch{}, xerrors.New("required 'account_id' param")
+	}
 	limit, err := getIntValue(values, "limit", defaultLimit)
 	if err != nil {
 		return RecoutFetch{}, errors.Wrap(err, "failed parse query key=limit")
 	}
-	return RecoutFetch{Limit: limit}, nil
+	return RecoutFetch{AccountID: accountID, Limit: limit}, nil
 }
 
 type RecoutContinues struct {

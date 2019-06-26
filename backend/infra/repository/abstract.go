@@ -8,7 +8,7 @@ import (
 
 type Recout interface {
 	Put(ctx context.Context, e entity.Recout) (string, error)
-	Fetch(ctx context.Context, offset, limit int) ([]entity.Recout, error)
+	Fetch(ctx context.Context, accountID string, offset, limit int) ([]entity.Recout, error)
 }
 
 type User interface {
