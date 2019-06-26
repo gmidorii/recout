@@ -116,7 +116,7 @@ export default class extends Vue {
 
   private async loadGraph() {
     try {
-      const { data } = await UserRepository.get();
+      const data = await UserRepository.get();
       this.graphUrl = `${process.env.pixelaUrl}/users/${
         data.account_id
       }/graphs/${data.pixela_graph}`;

@@ -3,6 +3,7 @@ export interface RootState {
 }
 
 export interface User {
+  id: string;
   name: string;
   session?: string;
 }

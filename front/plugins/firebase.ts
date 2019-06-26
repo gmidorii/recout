@@ -4,7 +4,7 @@ export default function({ store, route, error }) {
   return new Promise((resolve, reject) => {
     auth.onAuthStateChanged(user => {
       if (user) {
-        store.commit("setUser", { name: user.displayName });
+        store.dispatch("loginUser", { id: user.uid, name: user.displayName });
       }
       resolve();
     });
