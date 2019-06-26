@@ -68,10 +68,6 @@ func (c *client) CreateUser(user User) error {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("status code = %v", resp.StatusCode)
-	}
-
 	decoder := json.NewDecoder(resp.Body)
 	var resUser PostResponse
 	if err := decoder.Decode(&resUser); err != nil {
@@ -79,6 +75,10 @@ func (c *client) CreateUser(user User) error {
 	}
 	if !resUser.IsSuccess {
 		return errors.New("failed create user")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("status code = %v", resp.StatusCode)
 	}
 
 	return nil

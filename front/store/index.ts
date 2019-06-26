@@ -11,7 +11,8 @@ export const state = (): RootState => ({
 });
 
 export const getters = {
-  isLoggedIn: state => state.authUser !== null
+  isLoggedIn: state => state.authUser !== null,
+  userId: state => state.authUser.id
 };
 
 export const mutations: MutationTree<RootState> = {

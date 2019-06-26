@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "nuxt-property-decorator";
+import { Component, Vue, Action, Getter } from "nuxt-property-decorator";
 import { State } from "vuex-class";
 import Header from "~/components/layouts/Header.vue";
 import App from "~/components/layouts/App.vue";
@@ -73,6 +73,8 @@ const UserRepository: user = RepositoryFactory.getUser();
   }
 })
 export default class extends Vue {
+  @Getter userId;
+
   // TODO: fetch graph name and user name from recout api.
   hint: string = "Write your output (Ctrl + Enter)";
   timeout: number = 3000;
@@ -107,7 +109,7 @@ export default class extends Vue {
 
   private async loadContinues(): Promise<number> {
     try {
-      const { data } = await RecoutRepository.getContinues();
+      const { data } = await RecoutRepository.getContinues(this.userId);
       return data.count;
     } catch (error) {
       return 0;
@@ -116,7 +118,7 @@ export default class extends Vue {
 
   private async loadGraph() {
     try {
-      const data = await UserRepository.get();
+      const data = await UserRepository.get(this.userId);
       this.graphUrl = `${process.env.pixelaUrl}/users/${
         data.account_id
       }/graphs/${data.pixela_graph}`;

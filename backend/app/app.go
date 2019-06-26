@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -198,10 +199,20 @@ func NewUser(ctn Container, repoUser repository.User, client pixela.Client) User
 }
 
 func (u *user) Fetch(ctx context.Context, form form.User) (response.User, error) {
-	userEntity, err := u.repoUser.Get(ctx, form.AccountID)
+	//XXX: check all user.
+	//us, err := u.repoUser.Fetch(ctx, 0, 100)
+	//if err != nil {
+	//	return response.User{}, err
+	//}
+	//log.Printf("all user: %v\n", us)
+
+	accountID := fmt.Sprintf("rec%v", strings.ToLower(form.AccountID))
+
+	userEntity, err := u.repoUser.Get(ctx, accountID)
 	if err != nil {
 		return response.User{}, err
 	}
+
 	log.Println(userEntity)
 	return response.User{
 		AccountID:   userEntity.AccountID,
@@ -212,31 +223,33 @@ func (u *user) Fetch(ctx context.Context, form form.User) (response.User, error)
 func (p *user) Save(ctx context.Context, form form.User) error {
 	guid := xid.New()
 	token := guid.String()
+	accountID := fmt.Sprintf("rec%v", strings.ToLower(form.AccountID))
+
 	pixelaEntity := pixela.User{
 		Token:               token,
-		UserName:            strings.ToLower(form.AccountID),
+		UserName:            accountID,
 		AgreeTermsOfService: pixela.Yes,
 		NotMinor:            pixela.Yes,
 	}
 	if err := p.pixelaClient.CreateUser(pixelaEntity); err != nil {
-		return err
+		return xerrors.Errorf("failed create pixela user:%v", err)
 	}
 
 	guid = xid.New()
-	id := guid.String()[:idLen]
-	graph := generateGraphName(form.AccountID)
-	if err := p.pixelaClient.CreateGraph(id, graph, pixelaEntity.UserName, token); err != nil {
-		return err
+	graphID := guid.String()[:idLen]
+	graphName := generateGraphName(accountID)
+	if err := p.pixelaClient.CreateGraph(graphID, graphName, accountID, token); err != nil {
+		return xerrors.Errorf("failed create pixela graph:%v", err)
 	}
 
 	entity := entity.User{
-		AccountID:   form.AccountID,
-		PixelaGraph: graph,
+		AccountID:   accountID,
+		PixelaGraph: graphID,
 		PixelaToken: token,
 	}
 
 	if _, err := p.repoUser.Put(ctx, entity); err != nil {
-		return errors.Wrap(err, "failed create user")
+		return xerrors.Errorf("faild create entity user: %v", err)
 	}
 	return nil
 }
