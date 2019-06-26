@@ -99,7 +99,7 @@ export default class extends Vue {
 
   private async loadOutput(): Promise<Recout[]> {
     try {
-      const { data } = await RecoutRepository.get();
+      const { data } = await RecoutRepository.get(this.userId);
       return data;
     } catch (error) {
       console.log(error);
@@ -133,7 +133,7 @@ export default class extends Vue {
   public async submit() {
     this.loading = true;
     try {
-      await RecoutRepository.post(this.output);
+      await RecoutRepository.post(this.userId, this.output);
     } catch (error) {
       console.log(error);
       this.errMessage = "faild post recout.";

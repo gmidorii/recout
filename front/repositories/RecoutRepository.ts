@@ -8,22 +8,24 @@ const Repository = axios.create({
 });
 
 export interface recout {
-  get(limit?: number);
-  post(message: string);
+  get(accountId: string, limit?: number);
+  post(accountId: string, message: string);
   getContinues(accountId?: string);
 }
 
 const repositoryImpl: recout = {
-  get(limit: number = 20) {
+  get(accountId: string, limit: number = 20) {
     return Repository.get(`${resource}`, {
       params: {
+        account_id: accountId,
         limit
       }
     });
   },
 
-  post(message: string) {
+  post(accountId: string, message: string) {
     return Repository.post(`${resource}`, {
+      account_id: accountId,
       message
     });
   },
