@@ -44,8 +44,6 @@ func NewRecout(
 }
 
 func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err error) {
-	//TODO: fix to user login account id
-	//const accountID = "gmidorii"
 	accountID := toAccountID(form.AccountID)
 
 	userEntity, err := r.repoUser.Get(ctx, accountID)
@@ -76,7 +74,6 @@ func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err 
 	if err != nil {
 		switch err.(type) {
 		case repository.NotFoundError:
-			//TODO: put new entity.
 			e := entity.Continues{
 				AccountID: accountID,
 				LastDate:  r.ctn.Now.Format(entity.DateLayout),
