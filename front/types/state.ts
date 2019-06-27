@@ -1,4 +1,5 @@
 export interface RootState {
+  appName: string;
   authUser: User;
 }
 

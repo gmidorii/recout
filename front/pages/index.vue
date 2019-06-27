@@ -3,7 +3,11 @@
     <Header/>
     <App>
       <v-layout column justify-center class="title">
+        <v-alert :value="true" color="warning" outline>Warning: this app is version β</v-alert>
         <h2>{{ title }}</h2>
+        <div class="graph">
+          <v-img :src="indexGraphUrl"></v-img>
+        </div>
         <div>{{ subTitle }}</div>
       </v-layout>
 
@@ -30,6 +34,7 @@ import firebase from "firebase";
 export default class extends Vue {
   title = "Record + Output = Recout";
   subTitle = "This is a personal output visualization tool.";
+  indexGraphUrl = `${process.env.pixelaUrl}/users/gmidorii/graphs/recout`;
 
   mounted() {}
 }
@@ -37,12 +42,17 @@ export default class extends Vue {
 
 <style lang="scss" scoped>
 .title {
-  margin-top: 10%;
   h2 {
+    font-size: 5vw;
     margin: 0 auto;
   }
   div {
-    margin: 10% auto;
+    font-size: 4vw;
+    margin: 2em auto;
+  }
+  .graph {
+    margin: 0px auto;
+    width: 100%;
   }
 }
 </style>

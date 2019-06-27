@@ -7,11 +7,13 @@ import { user } from "~/repositories/UserRepository";
 const UserRepository: user = RepositoryFactory.getUser();
 
 export const state = (): RootState => ({
+  appName: "(β) Recout",
   authUser: null
 });
 
 export const getters = {
   isLoggedIn: state => state.authUser !== null,
+  appName: state => state.appName,
   userId: state => state.authUser.id
 };
 

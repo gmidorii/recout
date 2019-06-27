@@ -4,7 +4,7 @@
       <v-navigation-drawer v-model="drawer" cliped fixed app>
         <v-list>
           <v-list-tile to="/">
-            <v-list-tile-title>Recout</v-list-tile-title>
+            <v-list-tile-title>{{appName}}</v-list-tile-title>
           </v-list-tile>
         </v-list>
         <v-divider></v-divider>
@@ -17,7 +17,7 @@
       <v-toolbar app fixed cliped-left>
         <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
         <v-toolbar-title>
-          <router-link to="/" class="toolbar-title">Recout</router-link>
+          <router-link to="/" class="toolbar-title">{{appName}}</router-link>
         </v-toolbar-title>
       </v-toolbar>
       <v-content>
@@ -31,7 +31,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Component } from "nuxt-property-decorator";
+import { Component, Getter } from "nuxt-property-decorator";
 
 export interface DrawerContent {
   to: string;
@@ -40,6 +40,8 @@ export interface DrawerContent {
 
 @Component({})
 export default class extends Vue {
+  @Getter appName;
+
   home: string = "/";
   drawer: boolean = false;
   drawerContents: DrawerContent[] = [
