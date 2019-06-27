@@ -39,3 +39,4 @@ mock:
 	#rm ./app/mock/*
 	mockgen -source=./infra/repository/abstract.go -destination=./app/mock/repository.go -package=mock
 	mockgen -source=./infra/pixela/client.go -destination=./app/mock/pixela_client.go -package=mock
+	mockgen -source=./app/app.go -destination=./app/mock/app.go -package=mock
