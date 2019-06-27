@@ -2,7 +2,16 @@
   <section>
     <Header/>
     <App>
-      <button v-on:click="logout">logout</button>
+      <v-btn @click="dialog = true">logout</v-btn>
+      <v-dialog v-model="dialog" max-width="300">
+        <v-card>
+          <v-card-title>{{dialogTitle}}</v-card-title>
+          <v-card-actions>
+            <v-btn @click="disagree">no</v-btn>
+            <v-btn @click="agree">yes</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </App>
   </section>
 </template>
@@ -20,10 +29,19 @@ import App from "~/components/layouts/App.vue";
   }
 })
 export default class extends Vue {
-  @Action resetUser;
+  dialogTitle = "Do you want to logout?";
 
-  public logout() {
-    this.resetUser();
+  @Action resetUser;
+  dialog: boolean = false;
+
+  public disagree() {
+    this.dialog = false;
+  }
+
+  public async agree() {
+    await this.resetUser();
+    this.dialog = false;
+    this.$router.push("/");
   }
 }
 </script>
