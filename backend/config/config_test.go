@@ -12,7 +12,6 @@ func Test_randomXid_Do(t *testing.T) {
 		args    args
 		wantLen int
 	}{
-		// TODO: Add test cases.
 		{
 			name:    "success",
 			args:    args{length: 10},
