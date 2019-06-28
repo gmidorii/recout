@@ -64,7 +64,8 @@ stages:
         make ciinit
         npm install --prefix ../front/
         echo "----make generate----"
-        make generate
+        npm run generate --prefix ../front/
+        # make generate
         ls -l ../front/
         ls -l ../front/dist/
         echo "---make pack----"

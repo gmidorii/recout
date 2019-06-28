@@ -8,7 +8,7 @@ build: wire
 
 .PHONY: generate
 generate:
-	npm --prefix ../front/ run generate
+	npm run generate --prefix ../front/ 
 
 .PHONY: pack
 pack:
