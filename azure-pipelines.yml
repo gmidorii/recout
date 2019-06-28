@@ -69,19 +69,19 @@ stages:
         ls -l ./dist/
 
         # backend
-        cd ../backend/
-        make ciinit
-        make pack
+        # cd ../backend/
+        # make ciinit
+        # make pack
 
-        echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/credential.json
-        docker pull google/cloud-sdk:252.0.0-alpine
-        docker run -v /tmp:/tmp --name gcloud-config google/cloud-sdk:252.0.0-alpine gcloud auth activate-service-account --key-file /tmp/credential.json
-        docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine gcloud version
+        # echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/credential.json
+        # docker pull google/cloud-sdk:252.0.0-alpine
+        # docker run -v /tmp:/tmp --name gcloud-config google/cloud-sdk:252.0.0-alpine gcloud auth activate-service-account --key-file /tmp/credential.json
+        # docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine gcloud version
 
-        docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine cd /tmp/recout/backend && gcloud --quiet --project $PROJECT_ID_PRODUCTION app deploy
+        # docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine cd /tmp/recout/backend && gcloud --quiet --project $PROJECT_ID_PRODUCTION app deploy
 
-        # clean
-        docker rm -f gcloud-config
-        rm /tmp/$CI_PIPELINE_ID.json
+        # # clean
+        # docker rm -f gcloud-config
+        # rm /tmp/$CI_PIPELINE_ID.json
 
       displayName: 'deploy'
