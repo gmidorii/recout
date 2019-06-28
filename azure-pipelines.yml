@@ -58,20 +58,22 @@ stages:
 
         echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
         docker pull google/cloud-sdk:252.0.0-alpine
-        docker run -ti -v /tmp:/tmp --name gcloud-config google/cloud-sdk:252.0.0-alpine gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
-        docker run -ti -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine gcloud version
+        docker run -v /tmp:/tmp --name gcloud-config google/cloud-sdk:252.0.0-alpine gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+        docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine gcloud version
 
         make ciinit
         npm install --prefix ../front/
+
         echo "----make generate----"
-        npm run generate --prefix ../front/
-        # make generate
-        ls -l ../front/
-        ls -l ../front/dist/
+        cd ../front/
+        NODE_ENV=production RECOUT_URL='/v1' npx nuxt generate
+        ls -l ./dist/
+
         echo "---make pack----"
+        cd ../backend/
         make pack
 
-        docker run -ti -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine cd /tmp/recout/backend && gcloud --quiet --project $PROJECT_ID_PRODUCTION app deploy
+        docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine cd /tmp/recout/backend && gcloud --quiet --project $PROJECT_ID_PRODUCTION app deploy
 
         # clean
         docker rm -f gcloud-config
