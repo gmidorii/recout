@@ -60,18 +60,15 @@ stages:
     - script: |
         # front
         cd ./front/
-        pwd
-        ls -l
         npm install
-        npm run build
-        ls -l
+        echo $FIREBASE_CONFIG > ./firebase.config.ts
         NODE_ENV=production RECOUT_URL='/v1' npx nuxt generate
         ls -l ./dist/
 
         # backend
-        # cd ../backend/
-        # make ciinit
-        # make pack
+        cd ./backend/
+        make ciinit
+        make pack
 
         # echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/credential.json
         # docker pull google/cloud-sdk:252.0.0-alpine
