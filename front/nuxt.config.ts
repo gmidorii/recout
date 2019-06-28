@@ -12,7 +12,7 @@ export default {
       {
         hid: "description",
         name: "description",
-        content: "Nuxt.js TypeScript project"
+        content: "Record + Output = Recout"
       }
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
