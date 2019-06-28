@@ -1,6 +1,5 @@
 <template>
   <section>
-    <Header/>
     <App>
       <v-btn @click="dialog = true">logout</v-btn>
       <v-dialog v-model="dialog" max-width="300">
@@ -19,12 +18,10 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Mutation, Action } from "nuxt-property-decorator";
-import Header from "~/components/layouts/Header.vue";
 import App from "~/components/layouts/App.vue";
 
 @Component({
   components: {
-    Header,
     App
   }
 })

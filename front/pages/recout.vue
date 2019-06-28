@@ -1,6 +1,5 @@
 <template>
   <section>
-    <Header/>
     <App>
       <v-layout column justify-center class="part-content">
         <h3>Continues</h3>
@@ -54,7 +53,6 @@
 <script lang="ts">
 import { Component, Vue, Action, Getter } from "nuxt-property-decorator";
 import { State } from "vuex-class";
-import Header from "~/components/layouts/Header.vue";
 import App from "~/components/layouts/App.vue";
 import axios from "axios";
 import { basename } from "path";
@@ -68,7 +66,6 @@ const UserRepository: user = RepositoryFactory.getUser();
 
 @Component({
   components: {
-    Header,
     App
   }
 })

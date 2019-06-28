@@ -1,7 +1,8 @@
 <template>
   <section>
+    <Header/>
     <v-app dark>
-      <v-navigation-drawer v-model="drawer" cliped fixed app>
+      <v-navigation-drawer v-model="drawer" cliped fixed app :width="drawerWidth">
         <v-list>
           <v-list-tile to="/">
             <v-list-tile-title>{{appName}}</v-list-tile-title>
@@ -26,21 +27,30 @@
         </v-container>
       </v-content>
     </v-app>
+    <Footer class="footer"/>
   </section>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import { Component, Getter } from "nuxt-property-decorator";
+import Header from "~/components/layouts/Header.vue";
+import Footer from "~/components/layouts/Footer.vue";
 
 export interface DrawerContent {
   to: string;
   name: string;
 }
 
-@Component({})
+@Component({
+  components: {
+    Header,
+    Footer
+  }
+})
 export default class extends Vue {
   @Getter appName;
+  drawerWidth = 150;
 
   home: string = "/";
   drawer: boolean = false;
@@ -54,7 +64,7 @@ export default class extends Vue {
 <style lang="scss" scoped>
 .content {
   margin: 0 auto;
-  width: 90%;
+  width: 85%;
 }
 .toolbar-title {
   color: inherit;

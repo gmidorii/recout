@@ -1,6 +1,5 @@
 <template>
   <section>
-    <Header/>
     <App>
       <Login></Login>
     </App>
@@ -16,7 +15,6 @@ import App from "~/components/layouts/App.vue";
 
 @Component({
   components: {
-    Header,
     App,
     Login
   }
