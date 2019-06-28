@@ -74,14 +74,17 @@ stages:
         docker run -v /tmp:/tmp --name gcloud-config google/cloud-sdk:252.0.0-alpine gcloud auth activate-service-account --key-file /tmp/credential.json
         docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine gcloud version
 
+        echo $GAE_SECRET_FILE > ./secret.yml
         docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine gcloud --quiet --project $PROJECT_ID_PRODUCTION app deploy /tmp/recout/backend/app.yaml
 
         # clean
         docker rm -f gcloud-config
         rm /tmp/credential.json
+        rm ./secret.yml
       env:
         FIREBASE_CONFIG: $(FIREBASE_CONFIG)
         DEPLOY_KEY_FILE_PRODUCTION: $(DEPLOY_KEY_FILE_PRODUCTION)
         PROJECT_ID_PRODUCTION: $(PROJECT_ID_PRODUCTION)
+        GAE_SECRET_FILE: $(GAE_SECRET_FILE)
 
       displayName: 'deploy'
