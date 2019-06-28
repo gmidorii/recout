@@ -63,7 +63,6 @@ stages:
         echo $FIREBASE_CONFIG > ./firebase.config.ts
         npm install
         NODE_ENV=production RECOUT_URL='/v1' npx nuxt generate
-        ls -l ./dist/
 
         # backend
         cd ../backend
@@ -75,7 +74,7 @@ stages:
         docker run -v /tmp:/tmp --name gcloud-config google/cloud-sdk:252.0.0-alpine gcloud auth activate-service-account --key-file /tmp/credential.json
         docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine gcloud version
 
-        docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine cd /tmp/recout/backend && gcloud --quiet --project $PROJECT_ID_PRODUCTION app deploy
+        docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine gcloud --quiet --project $PROJECT_ID_PRODUCTION app deploy /tmp/recout/backend/app.yaml
 
         # clean
         docker rm -f gcloud-config
