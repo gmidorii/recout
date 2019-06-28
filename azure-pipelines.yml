@@ -62,9 +62,12 @@ stages:
         docker run -ti -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine gcloud version
 
         make ciinit
-        npm install --prefix ../front/ 
+        npm install --prefix ../front/
+        echo "----make generate----"
         make generate
+        ls -l ../front/
         ls -l ../front/dist/
+        echo "---make pack----"
         make pack
 
         docker run -ti -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine cd /tmp/recout/backend && gcloud --quiet --project $PROJECT_ID_PRODUCTION app deploy
