@@ -43,4 +43,4 @@ mock:
 
 .PHONY: init
 ciinit:
-	go get github.com/shibukawa/brbundle/...
+	go get github.com/shibukawa/brbundle/cmd/brbundle

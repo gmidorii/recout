@@ -2,6 +2,9 @@
 trigger:
 - master
 
+variables:
+  GOPATH: '$(system.defaultWorkingDirectory)/gopath'
+
 stages:
 # - stage: build
 #   jobs:
@@ -51,16 +54,21 @@ stages:
     steps:
 
     - script: |
-        echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-        apt-get update && apt-get install google-cloud-sdk
-
         cd ./backend
-        make ciinit
+
         echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
-        gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+        docker pull google/cloud-sdk:252.0.0-alpine
+        docker run -ti -v /tmp:/tmp --name gcloud-config google/cloud-sdk gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+
+        make ciinit
         npm --prefix ../front/ install
         make generate
         make pack
-        gcloud --quiet --project $PROJECT_ID_PRODUCTION app deploy
+
+        docker run -ti -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk cd /tmp/recout/backend && gcloud --quiet --project $PROJECT_ID_PRODUCTION app deploy
+
+        # clean
+        docker rm -f gcloud-config
+        rm /tmp/$CI_PIPELINE_ID.json
+
       displayName: 'deploy'
