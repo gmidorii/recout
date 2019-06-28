@@ -21,7 +21,7 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar app fixed cliped-left>
+    <v-toolbar app fixed cliped-left color="primary" class="toolbar">
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>
         <router-link to="/" class="toolbar-title">{{appName}}</router-link>

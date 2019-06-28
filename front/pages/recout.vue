@@ -29,7 +29,7 @@
               @keyup.ctrl.enter="submit"
               auto-grow
             ></v-textarea>
-            <v-btn block color="success" v-on:click="submit" :loading="loading">submit</v-btn>
+            <v-btn block color="secondary" v-on:click="submit" :loading="loading">submit</v-btn>
             <v-snackbar :value="succeed" color="success" :timeout="timeout" top>Success</v-snackbar>
             <v-snackbar :value="failed" color="error" :timeout="timeout" top>Error {{ errMessage }}</v-snackbar>
           </v-form>

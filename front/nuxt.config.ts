@@ -27,5 +27,16 @@ export default {
   router: {
     middleware: ["auth"]
   },
-  plugins: ["~/plugins/firebase.ts"]
+  plugins: ["~/plugins/firebase.ts"],
+  vuetify: {
+    theme: {
+      primary: "#00695C",
+      secondary: "#3f51b5",
+      accent: "#ff5722j",
+      error: "#f44336",
+      warning: "#ff9800",
+      info: "#03a9f4",
+      success: "#4caf50"
+    }
+  }
 };

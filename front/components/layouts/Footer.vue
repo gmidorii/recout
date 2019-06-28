@@ -1,7 +1,7 @@
 <template>
   <v-footer dark>
     <div>
-      made by
+      created by
       <a href="https://twitter.com/gmidorii" target="_blank">@gmidorii</a>
     </div>
     <v-spacer></v-spacer>

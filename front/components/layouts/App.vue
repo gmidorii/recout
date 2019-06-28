@@ -31,5 +31,6 @@ export default class extends Vue {}
 .content {
   margin: 0 auto;
   width: 85%;
+  max-width: 800px;
 }
 </style>

@@ -2,9 +2,9 @@
   <section>
     <App>
       <v-layout column justify-center class="title">
-        <v-alert :value="true" color="warning" outline>{{warningMessage}}</v-alert>
+        <v-alert :value="true" color="warning">{{warningMessage}}</v-alert>
         <h2>{{ title }}</h2>
-        <div>{{ subTitle }}</div>
+        <div class="subtitle">{{ subTitle }}</div>
       </v-layout>
 
       <Login></Login>
@@ -52,12 +52,17 @@ export default class extends Vue {
 <style lang="scss" scoped>
 .title {
   h2 {
-    font-size: 5vw;
+    font-size: 36px;
     margin: 0 auto;
+    text-align: center;
   }
   div {
-    font-size: 4vw;
     margin: 2em auto;
+  }
+  .subtitle {
+    font-size: 16px;
+    color: #afaaaa;
+    text-align: center;
   }
 }
 
@@ -66,7 +71,7 @@ export default class extends Vue {
   .section {
     .label {
       margin: 1em 0 0.5em 0;
-      font-size: 3vw;
+      font-size: 20px;
       text-align: center;
     }
   }
