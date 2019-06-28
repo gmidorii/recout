@@ -59,14 +59,15 @@ stages:
 
     - script: |
         # front
-        cd ./front/
+        cd ./front
         npm install
         echo $FIREBASE_CONFIG > ./firebase.config.ts
+        cat ./firebase.config.ts
         NODE_ENV=production RECOUT_URL='/v1' npx nuxt generate
         ls -l ./dist/
 
         # backend
-        cd ../backend/
+        cd ../backend
         make ciinit
         make pack
 
