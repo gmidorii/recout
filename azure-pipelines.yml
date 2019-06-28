@@ -26,7 +26,11 @@ stages:
 
     - script: |
         cd ./front
+        echo $FIREBASE_CONFIG > ./firebase.config.ts
         npx nuxt generate
+        rm ./firebase.config.ts
+      env:
+        FIREBASE_CONFIG: $(FIREBASE_CONFIG)
       displayName: 'generate prod code'
 
   - job: backend
