@@ -6,46 +6,48 @@ variables:
   GOPATH: '$(system.defaultWorkingDirectory)/gopath'
 
 stages:
-# - stage: build
-#   jobs:
-#   - job: front
-#     pool:
-#       vmImage: 'ubuntu-latest'
+- stage: build
+  jobs:
+  - job: front
+    pool:
+      vmImage: 'ubuntu-latest'
 
-#     steps:
-#     - task: NodeTool@0
-#       inputs:
-#         versionSpec: '10.x'
-#       displayName: 'Install Node.js'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '10.x'
+      displayName: 'Install Node.js'
 
-#     - script: |
-#         cd ./front
-#         npm install
-#         npm run build
-#       displayName: 'npm install and build'
+    - script: |
+        cd ./front
+        npm install
+        # npm test
+      displayName: 'npm install and test'
 
-#     - script: |
-#         cd ./front
-#         npx nuxt generate
-#       displayName: 'generate prod code'
+    - script: |
+        cd ./front
+        npx nuxt generate
+      displayName: 'generate prod code'
 
-#   - job: backend
-#     pool:
-#       vmImage: 'ubuntu-latest'
+  - job: backend
+    pool:
+      vmImage: 'ubuntu-latest'
     
-#     steps:
+    steps:
 
-#     - script: |
-#         cd ./backend
-#         go build
-#       displayName: 'go build'
+    - script: |
+        cd ./backend
+        go build
+      displayName: 'go build'
     
-#     - script: |
-#         cd ./backend
-#         make test
-#       displayName: 'go test'
+    - script: |
+        cd ./backend
+        make test
+      displayName: 'go test'
 
 - stage: deploy
+  # exec only master branch
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
   jobs:
   - job: app_engine_deploy
     pool:
@@ -70,9 +72,8 @@ stages:
         make pack
 
         echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/credential.json
-        docker pull google/cloud-sdk:252.0.0-alpine
-        docker run -v /tmp:/tmp --name gcloud-config google/cloud-sdk:252.0.0-alpine gcloud auth activate-service-account --key-file /tmp/credential.json
-        docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine gcloud version
+        docker pull google/cloud-sdk:${GCLOUD_VERSION}
+        docker run -v /tmp:/tmp --name gcloud-config google/cloud-sdk:${GCLOUD_VERSION} gcloud auth activate-service-account --key-file /tmp/credential.json
 
         # XXX: cannot create yaml secret file from env variable.
         echo "
@@ -90,5 +91,6 @@ stages:
         FIREBASE_CONFIG: $(FIREBASE_CONFIG)
         DEPLOY_KEY_FILE_PRODUCTION: $(DEPLOY_KEY_FILE_PRODUCTION)
         PROJECT_ID_PRODUCTION: $(PROJECT_ID_PRODUCTION)
+        GCLOUD_VERSION: 252.0.0-alpine
 
       displayName: 'deploy'
