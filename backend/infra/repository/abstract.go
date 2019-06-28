@@ -13,8 +13,9 @@ type Recout interface {
 
 type User interface {
 	Put(ctx context.Context, e entity.User) (string, error)
-	Get(ctx context.Context, accountID string) (entity.User, error)
+	Get(ctx context.Context, accountID string) (encodedKey string, user entity.User, err error)
 	Fetch(ctx context.Context, offset, limit int) ([]entity.User, error)
+	Delete(ctx context.Context, encodedKey string) error
 }
 
 type Continues interface {

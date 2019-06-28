@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
+	"golang.org/x/xerrors"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -24,6 +25,7 @@ type Client interface {
 	Increment(userID, token, graph string) error
 	CreateUser(user User) error
 	CreateGraph(id, graph, name, token string) error
+	DeleteUser(name, token string) error
 }
 
 type client struct {
@@ -124,5 +126,27 @@ func (c *client) CreateGraph(id, graph, name, token string) error {
 	if !postRes.IsSuccess {
 		return errors.New("failed create graph")
 	}
+	return nil
+}
+
+func (c *client) DeleteUser(name, token string) error {
+	url := fmt.Sprintf("%v/%v", pixelaURL, name)
+	log.Println(url)
+
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		return errors.Wrap(err, "failed new http request")
+	}
+	req.Header.Add(pixelaHeaderToken, token)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return xerrors.Errorf("status code not 200 got=%v", resp.StatusCode)
+	}
+
 	return nil
 }

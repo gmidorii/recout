@@ -86,20 +86,32 @@ func (u *userClient) Fetch(ctx context.Context, offset int, limit int) ([]entity
 	return entities, nil
 }
 
-func (u *userClient) Get(ctx context.Context, accountID string) (entity.User, error) {
+func (u *userClient) Get(ctx context.Context, accountID string) (string, entity.User, error) {
 	q := u.gClient.NewQuery(generateEntityByEnv(entity.UserEntityName, u.env)).
 		Filter("account_id = ", accountID).
 		Limit(1)
 
 	// user entity is only by account_id.
 	entities := make([]entity.User, 0, 1)
-	if _, err := u.gClient.GetAll(ctx, q, &entities); err != nil {
-		return entity.User{}, errors.Wrap(err, "failed user get.")
+	keys, err := u.gClient.GetAll(ctx, q, &entities)
+	if err != nil {
+		return "", entity.User{}, errors.Wrap(err, "failed user get.")
 	}
 	if len(entities) != 1 {
-		return entity.User{}, xerrors.Errorf("failed fetching entity id=%v: %w", accountID, repository.NotFoundError{})
+		return "", entity.User{}, xerrors.Errorf("failed fetching entity id=%v: %w", accountID, repository.NotFoundError{})
 	}
-	return entities[0], nil
+	return keys[0].Encode(), entities[0], nil
+}
+
+func (u *userClient) Delete(ctx context.Context, encodeKey string) error {
+	key, err := u.gClient.DecodeKey(encodeKey)
+	if err != nil {
+		return xerrors.Errorf("failed decoded key: %v", err)
+	}
+	if err := u.gClient.Delete(ctx, key); err != nil {
+		return xerrors.Errorf("failed delete datastore entity key=%v: %v", encodeKey, err)
+	}
+	return nil
 }
 
 type continuesClient struct {

@@ -30,6 +30,7 @@ func pathRoute(r *chi.Mux, config config.Config) {
 			u := handler.User{Config: config}
 			r.Get("/", u.Get)
 			r.Post("/", u.Post)
+			r.Delete("/", u.Delete)
 		})
 	})
 

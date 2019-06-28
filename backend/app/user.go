@@ -15,6 +15,7 @@ import (
 type User interface {
 	Fetch(ctx context.Context, form form.User) (response.User, error)
 	Save(ctx context.Context, form form.User) error
+	Delete(ctx context.Context, accountID string) error
 }
 
 type user struct {
@@ -41,7 +42,7 @@ func (u *user) Fetch(ctx context.Context, form form.User) (response.User, error)
 
 	accountID := toAccountID(form.AccountID)
 
-	userEntity, err := u.repoUser.Get(ctx, accountID)
+	_, userEntity, err := u.repoUser.Get(ctx, accountID)
 	if err != nil {
 		return response.User{}, err
 	}
@@ -82,5 +83,23 @@ func (p *user) Save(ctx context.Context, form form.User) error {
 	if _, err := p.repoUser.Put(ctx, entity); err != nil {
 		return xerrors.Errorf("faild create entity user: %v", err)
 	}
+	return nil
+}
+
+func (p *user) Delete(ctx context.Context, accountID string) error {
+	appAccountID := toAccountID(accountID)
+	key, user, err := p.repoUser.Get(ctx, appAccountID)
+	if err != nil {
+		return xerrors.Errorf("failed fetching user: %v", err)
+	}
+
+	if err := p.pixelaClient.DeleteUser(user.AccountID, user.PixelaToken); err != nil {
+		return xerrors.Errorf("failed delete pixela user : %v", err)
+	}
+
+	if err := p.repoUser.Delete(ctx, key); err != nil {
+		return xerrors.Errorf("failed delete recout user: %v", err)
+	}
+
 	return nil
 }

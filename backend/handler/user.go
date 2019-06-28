@@ -74,3 +74,28 @@ func (u User) Post(w http.ResponseWriter, r *http.Request) {
 
 	render.Status(r, http.StatusOK)
 }
+
+func (u User) Delete(w http.ResponseWriter, r *http.Request) {
+	accountID := r.URL.Query().Get("account_id")
+	if accountID == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		log.Println("account_id param is required")
+		return
+	}
+
+	ctn := configToContainer(u.Config)
+	service, err := injector.InitUserApp(u.Config.Client, ctn, ctn.Env)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if err := service.Delete(appengine.NewContext(r), accountID); err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	render.Status(r, http.StatusOK)
+}
