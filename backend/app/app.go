@@ -11,6 +11,7 @@ const (
 	pixelaHeaderToken = "X-USER-TOKEN"
 	pixelaTokenLen    = 32
 	pixelaGraphIDLen  = 8
+	prefixAccountID   = "rec"
 
 	durationDay = 24 * time.Hour
 	hoursPerDay = 24
@@ -48,6 +49,10 @@ func generateGraphName(origin string) string {
 	return strings.ReplaceAll(strings.ToLower(origin), " ", "")
 }
 
-func toAccountID(origin string) string {
-	return fmt.Sprintf("rec%v", strings.ToLower(origin))
+func encodeAccountID(origin string) string {
+	return fmt.Sprintf("%v%v", prefixAccountID, strings.ToLower(origin))
+}
+
+func decodeAccountID(encoded string) string {
+	return strings.Split(encoded, prefixAccountID)[1]
 }

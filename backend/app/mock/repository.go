@@ -103,12 +103,13 @@ func (mr *MockUserMockRecorder) Put(ctx, e interface{}) *gomock.Call {
 }
 
 // Get mocks base method
-func (m *MockUser) Get(ctx context.Context, accountID string) (entity.User, error) {
+func (m *MockUser) Get(ctx context.Context, accountID string) (string, entity.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", ctx, accountID)
-	ret0, _ := ret[0].(entity.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(entity.User)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // Get indicates an expected call of Get
@@ -130,6 +131,20 @@ func (m *MockUser) Fetch(ctx context.Context, offset, limit int) ([]entity.User,
 func (mr *MockUserMockRecorder) Fetch(ctx, offset, limit interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Fetch", reflect.TypeOf((*MockUser)(nil).Fetch), ctx, offset, limit)
+}
+
+// Delete mocks base method
+func (m *MockUser) Delete(ctx context.Context, encodedKey string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", ctx, encodedKey)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Delete indicates an expected call of Delete
+func (mr *MockUserMockRecorder) Delete(ctx, encodedKey interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockUser)(nil).Delete), ctx, encodedKey)
 }
 
 // MockContinues is a mock of Continues interface

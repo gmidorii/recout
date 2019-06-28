@@ -44,7 +44,7 @@ func NewRecout(
 }
 
 func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err error) {
-	accountID := toAccountID(form.AccountID)
+	accountID := encodeAccountID(form.AccountID)
 
 	_, userEntity, err := r.repoUser.Get(ctx, accountID)
 	if err != nil {
@@ -112,7 +112,7 @@ func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err 
 }
 
 func (r *recout) Fetch(ctx context.Context, form form.RecoutFetch) ([]response.RecoutFetch, error) {
-	entities, err := r.repoRecout.Fetch(ctx, toAccountID(form.AccountID), 0, form.Limit)
+	entities, err := r.repoRecout.Fetch(ctx, encodeAccountID(form.AccountID), 0, form.Limit)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed fetch recout entity from datastore")
 	}
@@ -128,7 +128,7 @@ func (r *recout) Fetch(ctx context.Context, form form.RecoutFetch) ([]response.R
 }
 
 func (r *recout) FetchContinues(ctx context.Context, form form.RecoutContinues) (response.RecoutContinues, error) {
-	_, e, err := r.repoContinues.Get(ctx, toAccountID(form.AccountID))
+	_, e, err := r.repoContinues.Get(ctx, encodeAccountID(form.AccountID))
 	if err != nil {
 		return response.RecoutContinues{}, errors.Wrap(err, "failed fetch continues entity")
 	}

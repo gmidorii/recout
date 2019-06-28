@@ -74,3 +74,17 @@ func (mr *MockClientMockRecorder) CreateGraph(id, graph, name, token interface{}
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateGraph", reflect.TypeOf((*MockClient)(nil).CreateGraph), id, graph, name, token)
 }
+
+// DeleteUser mocks base method
+func (m *MockClient) DeleteUser(name, token string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteUser", name, token)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteUser indicates an expected call of DeleteUser
+func (mr *MockClientMockRecorder) DeleteUser(name, token interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUser", reflect.TypeOf((*MockClient)(nil).DeleteUser), name, token)
+}

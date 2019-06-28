@@ -40,7 +40,7 @@ func (u *user) Fetch(ctx context.Context, form form.User) (response.User, error)
 	//}
 	//log.Printf("all user: %v\n", us)
 
-	accountID := toAccountID(form.AccountID)
+	accountID := encodeAccountID(form.AccountID)
 
 	_, userEntity, err := u.repoUser.Get(ctx, accountID)
 	if err != nil {
@@ -56,7 +56,7 @@ func (u *user) Fetch(ctx context.Context, form form.User) (response.User, error)
 
 func (p *user) Save(ctx context.Context, form form.User) error {
 	token := p.ctn.Generator.Do(pixelaTokenLen)
-	accountID := toAccountID(form.AccountID)
+	accountID := encodeAccountID(form.AccountID)
 
 	pixelaEntity := pixela.User{
 		Token:               token,
@@ -87,7 +87,7 @@ func (p *user) Save(ctx context.Context, form form.User) error {
 }
 
 func (p *user) Delete(ctx context.Context, accountID string) error {
-	appAccountID := toAccountID(accountID)
+	appAccountID := encodeAccountID(accountID)
 	key, user, err := p.repoUser.Get(ctx, appAccountID)
 	if err != nil {
 		return xerrors.Errorf("failed fetching user: %v", err)
