@@ -16,7 +16,7 @@
       </v-list>
       <v-divider></v-divider>
       <v-list>
-        <v-list-tile v-for="content in drawerContents" :key="content.name" :to="content.to">
+        <v-list-tile v-for="content in getDrawerContent" :key="content.name" :to="content.to">
           <v-list-tile-content>{{ content.name}}</v-list-tile-content>
         </v-list-tile>
       </v-list>
@@ -38,6 +38,7 @@ import { DrawerContent } from "~/types";
 @Component({})
 export default class extends Vue {
   @Getter appName;
+  @Getter isLoggedIn;
   drawerWidth = 150;
 
   home: string = "/";
@@ -46,6 +47,14 @@ export default class extends Vue {
     { to: "login", name: "Login" },
     { to: "logout", name: "Logout" }
   ];
+
+  get getDrawerContent() {
+    const contents = [...this.drawerContents];
+    if (this.isLoggedIn) {
+      contents.push({ to: "recout", name: "Mypage" });
+    }
+    return contents;
+  }
 }
 </script>
 
