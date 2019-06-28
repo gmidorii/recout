@@ -2,40 +2,64 @@
 trigger:
 - master
 
-jobs:
-- job: front
-  pool:
-    vmImage: 'ubuntu-latest'
+stages:
+- stage: build
+  jobs:
+  - job: front
+    pool:
+      vmImage: 'ubuntu-latest'
 
-  steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '10.x'
-    displayName: 'Install Node.js'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '10.x'
+      displayName: 'Install Node.js'
 
-  - script: |
-      cd ./front
-      npm install
-      npm run build
-    displayName: 'npm install and build'
+    - script: |
+        cd ./front
+        npm install
+        npm run build
+      displayName: 'npm install and build'
 
-  - script: |
-      cd ./front
-      npx nuxt generate
-    displayName: 'generate prod code'
+    - script: |
+        cd ./front
+        npx nuxt generate
+      displayName: 'generate prod code'
 
-- job: backend
-  pool:
-    vmImage: 'ubuntu-latest'
-  
-  steps:
+  - job: backend
+    pool:
+      vmImage: 'ubuntu-latest'
+    
+    steps:
 
-  - script: |
-      cd ./backend
-      go build
-    displayName: 'go build'
-  
-  - script: |
-      cd ./backend
-      make test
-    displayName: 'go test'
+    - script: |
+        cd ./backend
+        go build
+      displayName: 'go build'
+    
+    - script: |
+        cd ./backend
+        make test
+      displayName: 'go test'
+
+- stage: deploy
+  jobs:
+  - job: app engine deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+    
+    steps:
+
+    - script: |
+        echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+        apt-get update && apt-get install google-cloud-sdk
+
+        cd ./backend
+        make ciinit
+        echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
+        gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+        # make generate
+        make pack
+        gcloud --quiet --project $PROJECT_ID_PRODUCTION app deploy
+      displayName: 'deploy'
