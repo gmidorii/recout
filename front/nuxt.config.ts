@@ -19,7 +19,9 @@ export default {
   },
   loading: { color: "#3B8070" },
   css: ["~/assets/css/main.css", "firebaseui-ja/dist/firebaseui.css"],
-  build: {},
+  build: {
+    quiet: false
+  },
   modules: ["@nuxtjs/axios", "@nuxtjs/vuetify"],
   axios: {},
   router: {
