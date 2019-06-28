@@ -18,7 +18,7 @@
   },
   "scripts": {
     "dev": "RECOUT_URL='http://localhost:8080/v1' nuxt",
-    "build": "NODE_ENV=production nuxt build",
+    "build": "NODE_ENV=production RECOUT_URL='/v1' nuxt build",
     "start": "nuxt start",
     "generate": "NODE_ENV=production RECOUT_URL='/v1' nuxt generate"
   },

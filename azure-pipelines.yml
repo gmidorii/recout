@@ -58,23 +58,23 @@ stages:
       displayName: 'Install Node.js'
 
     - script: |
-        cd ./backend
+        echo "----make generate----"
+        cd ./front/
+        pwd
+        ls -l
+        npm install
+        npm run build
+        ls -l
+        NODE_ENV=production RECOUT_URL='/v1' npx nuxt generate
+        ls -l ./dist/
 
+        cd ../backend/
         echo $DEPLOY_KEY_FILE_PRODUCTION > /tmp/$CI_PIPELINE_ID.json
         docker pull google/cloud-sdk:252.0.0-alpine
         docker run -v /tmp:/tmp --name gcloud-config google/cloud-sdk:252.0.0-alpine gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
         docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine gcloud version
 
         make ciinit
-        npm install --prefix ../front/
-
-        echo "----make generate----"
-        cd ../front/
-        NODE_ENV=production RECOUT_URL='/v1' npx nuxt generate
-        ls -l ./dist/
-
-        echo "---make pack----"
-        cd ../backend/
         make pack
 
         docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine cd /tmp/recout/backend && gcloud --quiet --project $PROJECT_ID_PRODUCTION app deploy
