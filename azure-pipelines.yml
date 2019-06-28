@@ -74,7 +74,12 @@ stages:
         docker run -v /tmp:/tmp --name gcloud-config google/cloud-sdk:252.0.0-alpine gcloud auth activate-service-account --key-file /tmp/credential.json
         docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine gcloud version
 
-        echo $GAE_SECRET_FILE > ./secret.yml
+        # XXX: cannot create yaml secret file from env variable.
+        echo "
+        env_variables:
+          DATASTORE_PROJECT_ID: ${PROJECT_ID_PRODUCTION}
+        " > ./secret.yml
+
         docker run -v $(pwd):/tmp/recout/backend --volumes-from gcloud-config google/cloud-sdk:252.0.0-alpine gcloud --quiet --project $PROJECT_ID_PRODUCTION app deploy /tmp/recout/backend/app.yaml
 
         # clean
@@ -85,6 +90,5 @@ stages:
         FIREBASE_CONFIG: $(FIREBASE_CONFIG)
         DEPLOY_KEY_FILE_PRODUCTION: $(DEPLOY_KEY_FILE_PRODUCTION)
         PROJECT_ID_PRODUCTION: $(PROJECT_ID_PRODUCTION)
-        GAE_SECRET_FILE: $(GAE_SECRET_FILE)
 
       displayName: 'deploy'
