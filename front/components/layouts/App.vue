@@ -27,7 +27,7 @@
         </v-container>
       </v-content>
     </v-app>
-    <Footer class="footer"/>
+    <Footer/>
   </section>
 </template>
 
