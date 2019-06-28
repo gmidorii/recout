@@ -1,9 +1,13 @@
 import firebase from "firebase/app";
 import "firebase/auth";
-import { config } from "~/firebase.config";
+import { devConfig, prodConfig } from "~/firebase.config";
 
 if (!firebase.apps.length) {
-  firebase.initializeApp(config);
+  if (process.env.NODE_ENV === "production") {
+    firebase.initializeApp(prodConfig);
+  } else {
+    firebase.initializeApp(devConfig);
+  }
 }
 
 export const providers = [firebase.auth.GithubAuthProvider.PROVIDER_ID];

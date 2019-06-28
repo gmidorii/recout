@@ -18,9 +18,9 @@
   },
   "scripts": {
     "dev": "RECOUT_URL='http://localhost:8080/v1' nuxt",
-    "build": "nuxt build",
+    "build": "NODE_ENV=production nuxt build",
     "start": "nuxt start",
-    "generate": "RECOUT_URL='/v1' nuxt generate"
+    "generate": "NODE_ENV=production RECOUT_URL='/v1' nuxt generate"
   },
   "devDependencies": {
     "@nuxt/typescript": "2.6.1",
