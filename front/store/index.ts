@@ -8,21 +8,46 @@ const UserRepository: user = RepositoryFactory.getUser();
 
 export const state = (): RootState => ({
   appName: "(β) Recout",
-  authUser: null
+  userState: {
+    created: false,
+    user: null
+  }
 });
 
 export const getters = {
-  isLoggedIn: state => state.authUser !== null,
+  isLoggedIn: state => state.userState.user !== null,
   appName: state => state.appName,
-  userId: state => state.authUser.id
+  userId: state => {
+    if (state.userState.user) {
+      return state.userState.user.id;
+    }
+    return "";
+  },
+  pixelaGraphUrl: state => {
+    if (!state.userState.created) {
+      return "";
+    }
+    const user = state.userState.user;
+    return `${process.env.pixelaUrl}/users/${user.pixelaName}/graphs/${
+      user.pixelaGraph
+    }`;
+  }
 };
 
 export const mutations: MutationTree<RootState> = {
   setUser: (state, user) => {
-    state.authUser = user;
+    state.userState.user = Object.assign({}, user);
+  },
+  setUserDetail: (state, { userName, graph }) => {
+    state.userState.user = Object.assign(state.userState.user, {
+      pixelaName: userName,
+      pixelaGraph: graph
+    });
+    state.userState.created = true;
   },
   resetUser: state => {
-    state.authUser = null;
+    state.userState.user = null;
+    state.userState.created = false;
   }
 };
 
@@ -32,18 +57,29 @@ export const actions: ActionTree<RootState, RootState> = {
     commit("resetUser");
   },
   async loginUser({ state, commit }, user: User) {
-    if (state.authUser === null || state.authUser.id !== user.id) {
+    if (state.userState.user === null || state.userState.user.id !== user.id) {
       commit("setUser", user);
     }
 
     const currentUser = await UserRepository.get(user.id);
-    if (!currentUser) {
-      try {
-        await UserRepository.post(user);
-      } catch (e) {
-        console.log(e);
-        return;
-      }
+    if (currentUser) {
+      commit("setUserDetail", {
+        userName: currentUser.account_id,
+        graph: currentUser.pixela_graph
+      });
+      return;
+    }
+
+    try {
+      await UserRepository.post(user);
+      const createdUser = await UserRepository.get(user.id);
+      commit("setUserDetail", {
+        userName: createdUser.account_id,
+        graph: createdUser.pixela_graph
+      });
+    } catch (e) {
+      console.log(e);
+      return;
     }
   }
 };

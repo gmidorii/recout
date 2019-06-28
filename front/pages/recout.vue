@@ -7,12 +7,12 @@
       </v-layout>
       <v-layout column justify-center class="part-content">
         <h3>Graph</h3>
-        <a :href="graphDetailUrl" target="_blank">
+        <a :href="getPixelaGraphDetailUrl" target="_blank">
           <div class="graph">
-            <v-img :src="graphUrl"></v-img>
+            <v-img :src="getPixelaGraphUrl"></v-img>
           </div>
           <div class="graph">
-            <v-img :src="graphLineUrl"></v-img>
+            <v-img :src="getPixelaGraphLineUrl"></v-img>
           </div>
         </a>
       </v-layout>
@@ -51,8 +51,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Action, Getter } from "nuxt-property-decorator";
-import { State } from "vuex-class";
+import { Component, Vue, Action } from "nuxt-property-decorator";
+import { State, Getter } from "vuex-class";
 import App from "~/components/layouts/App.vue";
 import axios from "axios";
 import { basename } from "path";
@@ -71,8 +71,8 @@ const UserRepository: user = RepositoryFactory.getUser();
 })
 export default class extends Vue {
   @Getter userId;
+  @Getter pixelaGraphUrl;
 
-  // TODO: fetch graph name and user name from recout api.
   hint: string = "Write your output (Ctrl + Enter)";
   timeout: number = 3000;
 
@@ -80,9 +80,6 @@ export default class extends Vue {
   succeed: boolean = false;
   failed: boolean = false;
 
-  graphUrl: string = "";
-  graphLineUrl: string = "";
-  graphDetailUrl: string = "";
   pastOutputs: Recout[] = [];
   output: string = "";
   recoutContinues: number = null;
@@ -91,7 +88,18 @@ export default class extends Vue {
   async created() {
     this.pastOutputs = await this.loadOutput();
     this.recoutContinues = await this.loadContinues();
-    await this.loadGraph();
+  }
+
+  get getPixelaGraphUrl() {
+    return this.pixelaGraphUrl;
+  }
+
+  get getPixelaGraphLineUrl() {
+    return `${this.getPixelaGraphUrl}?mode=line`;
+  }
+
+  get getPixelaGraphDetailUrl() {
+    return `${this.getPixelaGraphUrl}.html`;
   }
 
   private async loadOutput(): Promise<Recout[]> {
@@ -110,20 +118,6 @@ export default class extends Vue {
       return data.count;
     } catch (error) {
       return 0;
-    }
-  }
-
-  private async loadGraph() {
-    try {
-      const data = await UserRepository.get(this.userId);
-      this.graphUrl = `${process.env.pixelaUrl}/users/${
-        data.account_id
-      }/graphs/${data.pixela_graph}`;
-      this.graphLineUrl = `${this.graphUrl}?mode=line`;
-      this.graphDetailUrl = `${this.graphUrl}.html`;
-    } catch (error) {
-      this.errMessage = "failed load graph.";
-      this.failed = true;
     }
   }
 
