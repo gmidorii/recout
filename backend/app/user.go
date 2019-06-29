@@ -42,7 +42,7 @@ func (u *user) Fetch(ctx context.Context, form form.User) (response.User, error)
 
 	accountID := encodeAccountID(form.AccountID)
 
-	_, userEntity, err := u.repoUser.Get(ctx, accountID)
+	userEntity, err := u.repoUser.Get(ctx, accountID)
 	if err != nil {
 		return response.User{}, err
 	}
@@ -88,7 +88,7 @@ func (p *user) Save(ctx context.Context, form form.User) error {
 
 func (p *user) Delete(ctx context.Context, accountID string) error {
 	appAccountID := encodeAccountID(accountID)
-	key, user, err := p.repoUser.Get(ctx, appAccountID)
+	user, err := p.repoUser.Get(ctx, appAccountID)
 	if err != nil {
 		return xerrors.Errorf("failed fetching user: %v", err)
 	}
@@ -97,7 +97,7 @@ func (p *user) Delete(ctx context.Context, accountID string) error {
 		return xerrors.Errorf("failed delete pixela user : %v", err)
 	}
 
-	if err := p.repoUser.Delete(ctx, key); err != nil {
+	if err := p.repoUser.Delete(ctx, appAccountID); err != nil {
 		return xerrors.Errorf("failed delete recout user: %v", err)
 	}
 

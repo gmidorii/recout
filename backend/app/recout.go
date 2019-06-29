@@ -46,7 +46,7 @@ func NewRecout(
 func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err error) {
 	accountID := encodeAccountID(form.AccountID)
 
-	_, userEntity, err := r.repoUser.Get(ctx, accountID)
+	userEntity, err := r.repoUser.Get(ctx, accountID)
 	if err != nil {
 		return "", errors.Wrapf(err, "failed fetching user entity id = %v", accountID)
 	}
