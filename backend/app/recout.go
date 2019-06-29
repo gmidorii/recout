@@ -72,8 +72,7 @@ func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err 
 
 	continuesKey, continuesEntity, err := r.repoContinues.Get(ctx, accountID)
 	if err != nil {
-		switch err.(type) {
-		case repository.NotFoundError:
+		if xerrors.Is(err, repository.NotFoundError{}) {
 			e := entity.Continues{
 				AccountID: accountID,
 				LastDate:  r.ctn.Now.Format(entity.DateLayout),
@@ -83,9 +82,9 @@ func (r *recout) Create(ctx context.Context, form form.Recout) (uid string, err 
 				return "", xerrors.Errorf("failed init put continues entity: %w", err)
 			}
 			return "", nil
-		default:
-			return "", xerrors.Errorf("failed get continues entity: %w", err)
 		}
+		return "", xerrors.Errorf("failed get continues entity: %w", err)
+
 	}
 
 	lastDate, err := time.Parse(entity.DateLayout, continuesEntity.LastDate)
@@ -130,7 +129,7 @@ func (r *recout) Fetch(ctx context.Context, form form.RecoutFetch) ([]response.R
 func (r *recout) FetchContinues(ctx context.Context, form form.RecoutContinues) (response.RecoutContinues, error) {
 	_, e, err := r.repoContinues.Get(ctx, encodeAccountID(form.AccountID))
 	if err != nil {
-		return response.RecoutContinues{}, errors.Wrap(err, "failed fetch continues entity")
+		return response.RecoutContinues{}, xerrors.Errorf("failed fetch continues entity: %w", err)
 	}
 	lastDate, err := time.Parse(entity.DateLayout, e.LastDate)
 	if err != nil {

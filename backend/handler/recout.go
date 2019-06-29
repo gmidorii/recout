@@ -8,8 +8,10 @@ import (
 
 	"github.com/gmidorii/recout/backend/config"
 	"github.com/gmidorii/recout/backend/form"
+	"github.com/gmidorii/recout/backend/infra/repository"
 	"github.com/gmidorii/recout/backend/injector"
 	"github.com/go-chi/render"
+	"golang.org/x/xerrors"
 	"google.golang.org/appengine"
 )
 
@@ -91,6 +93,12 @@ func (rh Recout) GetContinues(w http.ResponseWriter, r *http.Request) {
 	}
 	res, err := service.FetchContinues(appengine.NewContext(r), form)
 	if err != nil {
+		if xerrors.Is(err, repository.NotFoundError{}) {
+			log.Println(err)
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
