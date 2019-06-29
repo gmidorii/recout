@@ -2,7 +2,7 @@ import { auth } from "~/plugins/firebaseinit";
 
 const generateId = user => user.uid.toLowerCase();
 
-export default function({ store, route, error }) {
+export default function({ store }) {
   return new Promise((resolve, reject) => {
     auth.onAuthStateChanged(user => {
       if (user) {
