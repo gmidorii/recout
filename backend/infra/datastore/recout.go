@@ -35,8 +35,7 @@ func (c *recoutClient) Put(ctx context.Context, e entity.Recout) (string, error)
 
 func (c *recoutClient) Fetch(ctx context.Context, accountID string, offset int, limit int) ([]entity.Recout, error) {
 	//TODO: use offset query.
-	q := c.gClient.
-		NewQuery(generateEntityByEnv(entity.RecoutEntityName, c.env)).
+	q := newQuery(c.gClient, entity.RecoutEntityName, c.env).
 		Filter("account_id =", accountID).
 		Order("-created_at").
 		Limit(limit)

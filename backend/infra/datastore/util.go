@@ -8,6 +8,10 @@ import (
 	"go.mercari.io/datastore"
 )
 
+const (
+	namespacePrefix = "recout"
+)
+
 func generateUUID() (string, error) {
 	id, err := uuid.NewV4()
 	if err != nil {
@@ -16,10 +20,17 @@ func generateUUID() (string, error) {
 	return id.String(), nil
 }
 
-func generateEntityByEnv(kind, env string) string {
-	return fmt.Sprintf("%v_%v", env, kind)
+func generateNamespace(env string) string {
+	fmt.Printf("%v_%v\n", namespacePrefix, env)
+	return fmt.Sprintf("%v_%v", namespacePrefix, env)
+}
+
+func newQuery(c datastore.Client, kind, env string) datastore.Query {
+	return c.NewQuery(kind).Namespace(generateNamespace(env))
 }
 
 func generateKey(client datastore.Client, kind, env, uid string) datastore.Key {
-	return client.NameKey(generateEntityByEnv(kind, env), uid, nil)
+	key := client.NameKey(kind, uid, nil)
+	key.SetNamespace(generateNamespace(env))
+	return key
 }
