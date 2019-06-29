@@ -134,9 +134,12 @@ func (c *continuesClient) Put(ctx context.Context, e entity.Continues) error {
 	return nil
 }
 
-func (c *continuesClient) PutKey(ctx context.Context, key string, e entity.Continues) error {
-	k := c.gClient.NameKey(generateEntityByEnv(entity.ContinuesEntityName, c.env), key, nil)
-	if _, err := c.gClient.Put(ctx, k, &e); err != nil {
+func (c *continuesClient) PutKey(ctx context.Context, encodedKey string, e entity.Continues) error {
+	key, err := c.gClient.DecodeKey(encodedKey)
+	if err != nil {
+		return xerrors.Errorf("failed decode key: %v", err)
+	}
+	if _, err := c.gClient.Put(ctx, key, &e); err != nil {
 		return err
 	}
 	return nil
@@ -156,5 +159,5 @@ func (c *continuesClient) Get(ctx context.Context, accountID string) (string, en
 	if len(entities) == 0 {
 		return "", entity.Continues{}, repository.NotFoundError{}
 	}
-	return keys[0].Name(), entities[0], nil
+	return keys[0].Encode(), entities[0], nil
 }
