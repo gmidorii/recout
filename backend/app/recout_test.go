@@ -59,7 +59,7 @@ func Test_recout_Create(t *testing.T) {
 					m := mock.NewMockUser(ctrl)
 					m.EXPECT().
 						Get(gomock.Any(), "recgmidorii").
-						Return("key", entity.User{
+						Return(entity.User{
 							AccountID:   "recgmidorii",
 							AccessToken: "xxxxxxxx",
 							Name:        "midori",

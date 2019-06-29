@@ -103,13 +103,12 @@ func (mr *MockUserMockRecorder) Put(ctx, e interface{}) *gomock.Call {
 }
 
 // Get mocks base method
-func (m *MockUser) Get(ctx context.Context, accountID string) (string, entity.User, error) {
+func (m *MockUser) Get(ctx context.Context, accountID string) (entity.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", ctx, accountID)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(entity.User)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret0, _ := ret[0].(entity.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Get indicates an expected call of Get
@@ -134,17 +133,17 @@ func (mr *MockUserMockRecorder) Fetch(ctx, offset, limit interface{}) *gomock.Ca
 }
 
 // Delete mocks base method
-func (m *MockUser) Delete(ctx context.Context, encodedKey string) error {
+func (m *MockUser) Delete(ctx context.Context, accountID string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", ctx, encodedKey)
+	ret := m.ctrl.Call(m, "Delete", ctx, accountID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Delete indicates an expected call of Delete
-func (mr *MockUserMockRecorder) Delete(ctx, encodedKey interface{}) *gomock.Call {
+func (mr *MockUserMockRecorder) Delete(ctx, accountID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockUser)(nil).Delete), ctx, encodedKey)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockUser)(nil).Delete), ctx, accountID)
 }
 
 // MockContinues is a mock of Continues interface
@@ -185,17 +184,17 @@ func (mr *MockContinuesMockRecorder) Put(ctx, e interface{}) *gomock.Call {
 }
 
 // PutKey mocks base method
-func (m *MockContinues) PutKey(ctx context.Context, key string, e entity.Continues) error {
+func (m *MockContinues) PutKey(ctx context.Context, encodedKey string, e entity.Continues) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "PutKey", ctx, key, e)
+	ret := m.ctrl.Call(m, "PutKey", ctx, encodedKey, e)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // PutKey indicates an expected call of PutKey
-func (mr *MockContinuesMockRecorder) PutKey(ctx, key, e interface{}) *gomock.Call {
+func (mr *MockContinuesMockRecorder) PutKey(ctx, encodedKey, e interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PutKey", reflect.TypeOf((*MockContinues)(nil).PutKey), ctx, key, e)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PutKey", reflect.TypeOf((*MockContinues)(nil).PutKey), ctx, encodedKey, e)
 }
 
 // Get mocks base method
