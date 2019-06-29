@@ -1,7 +1,9 @@
 <template>
   <section>
     <App>
-      <v-btn @click="dialog = true">logout</v-btn>
+      <v-layout justify-center>
+        <v-btn @click="dialog = true">logout</v-btn>
+      </v-layout>
       <v-dialog v-model="dialog" max-width="300">
         <v-card>
           <v-card-title>{{dialogTitle}}</v-card-title>
