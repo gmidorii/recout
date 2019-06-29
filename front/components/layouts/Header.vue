@@ -8,7 +8,7 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
 
-    <v-navigation-drawer v-model="drawer" cliped fixed app :width="drawerWidth">
+    <v-navigation-drawer v-model="drawer" cliped fixed app right :width="drawerWidth">
       <v-list>
         <v-list-tile to="/">
           <v-list-tile-title>{{appName}}</v-list-tile-title>
@@ -21,11 +21,12 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar app fixed cliped-left color="primary" class="toolbar">
-      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+    <v-toolbar app fixed class="toolbar">
       <v-toolbar-title>
         <router-link to="/" class="toolbar-title">{{appName}}</router-link>
       </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
     </v-toolbar>
   </section>
 </template>
@@ -43,17 +44,17 @@ export default class extends Vue {
 
   home: string = "/";
   drawer: boolean = false;
-  drawerContents: DrawerContent[] = [
-    { to: "login", name: "Login" },
+  noLoggedIndrawerContents: DrawerContent[] = [{ to: "login", name: "Login" }];
+  loggedIndrawerContents: DrawerContent[] = [
+    { to: "recout", name: "MyPage" },
     { to: "logout", name: "Logout" }
   ];
 
   get getDrawerContent() {
-    const contents = [...this.drawerContents];
     if (this.isLoggedIn) {
-      contents.push({ to: "recout", name: "Mypage" });
+      return this.loggedIndrawerContents;
     }
-    return contents;
+    return this.noLoggedIndrawerContents;
   }
 }
 </script>
