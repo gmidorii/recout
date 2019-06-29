@@ -46,7 +46,7 @@ func subDate(before, after time.Time) int {
 }
 
 func generateGraphName(origin string) string {
-	return strings.ReplaceAll(strings.ToLower(origin), " ", "")
+	return strings.Replace(strings.ToLower(origin), " ", "", -1)
 }
 
 func encodeAccountID(origin string) string {
